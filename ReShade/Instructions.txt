@@ -1,0 +1,3 @@
+Point reshade to:
+C:\Riot Games\League of Legends\RADS\solutions\lol_game_client_sln\releases\x.x.x.xxx\deploy\League of Legends.exe
+to properly install it

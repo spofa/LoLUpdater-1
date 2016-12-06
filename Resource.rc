@@ -1,0 +1,426 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+/////////////////////////////////////////////////////////////////////////////
+// Swedish (Sweden) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SVE)
+LANGUAGE LANG_SWEDISH, SUBLANG_SWEDISH
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+XP                      RCDATA                  "Install\\XP.dll"
+
+XPP                     RCDATA                  "Install\\precise\\XP.dll"
+
+XPS                     RCDATA                  "Install\\strict\\XP.dll"
+
+CON                     RCDATA                  "Install\\concrt140.dll"
+
+CON2                    RCDATA                  "Install\\vcruntime140.dll"
+
+CON3                    RCDATA                  "Install\\ucrtbase.dll"
+
+CON4                    RCDATA                  "Install\\msvcp140.dll"
+
+CONX                    RCDATA                  "Uninstall\\concrt140.dll"
+
+CONX2                   RCDATA                  "Uninstall\\vcruntime140.dll"
+
+CONX3                   RCDATA                  "Uninstall\\ucrtbase.dll"
+
+RIOT                    RCDATA                  "Install\\rgDownload_R.dll"
+
+D3D                     RCDATA                  "Install\\D3DX9_43.dll"
+
+XAA                     RCDATA                  "Install\\Adobe Air.dll"
+
+XBB                     RCDATA                  "Install\\NPSWF32.dll"
+
+XA1                     RCDATA                  "Install\\cg.dll"
+
+XA2                     RCDATA                  "Install\\cgGL.dll"
+
+XA3                     RCDATA                  "Install\\cgD3D9.dll"
+
+X2                      RCDATA                  "Install\\msvcp120.dll"
+
+X3                      RCDATA                  "Install\\msvcr120.dll"
+
+X4                      RCDATA                  "Install\\AVX2-Win7.dll"
+
+X5                      RCDATA                  "Install\\AVX2-Win8.dll"
+
+X6                      RCDATA                  "Install\\AVX2-Win10.dll"
+
+X7                      RCDATA                  "Install\\AVX-Win7.dll"
+
+X8                      RCDATA                  "Install\\AVX-Win8.dll"
+
+X9                      RCDATA                  "Install\\AVX-Win10.dll"
+
+X10                     RCDATA                  "Install\\Win7.dll"
+
+X11                     RCDATA                  "Install\\Win8.dll"
+
+X12                     RCDATA                  "Install\\Win10.dll"
+
+X13                     RCDATA                  "Install\\Vista.dll"
+
+S1                      RCDATA                  "Install\\strict\\AVX2-Win7.dll"
+
+S2                      RCDATA                  "Install\\strict\\AVX2-Win8.dll"
+
+S3                      RCDATA                  "Install\\strict\\AVX2-Win10.dll"
+
+S4                      RCDATA                  "Install\\strict\\AVX-Win7.dll"
+
+S5                      RCDATA                  "Install\\strict\\AVX-Win8.dll"
+
+S6                      RCDATA                  "Install\\strict\\AVX-Win10.dll"
+
+S7                      RCDATA                  "Install\\strict\\Win7.dll"
+
+S8                      RCDATA                  "Install\\strict\\Win8.dll"
+
+S9                      RCDATA                  "Install\\strict\\Win10.dll"
+
+S10                     RCDATA                  "Install\\strict\\Vista.dll"
+
+P1                      RCDATA                  "Install\\precise\\AVX2-Win7.dll"
+
+P2                      RCDATA                  "Install\\precise\\AVX2-Win8.dll"
+
+P3                      RCDATA                  "Install\\precise\\AVX2-Win10.dll"
+
+P4                      RCDATA                  "Install\\precise\\AVX-Win7.dll"
+
+P5                      RCDATA                  "Install\\precise\\AVX-Win8.dll"
+
+P6                      RCDATA                  "Install\\precise\\AVX-Win10.dll"
+
+P7                      RCDATA                  "Install\\precise\\Win7.dll"
+
+P8                      RCDATA                  "Install\\precise\\Win8.dll"
+
+P9                      RCDATA                  "Install\\precise\\Win10.dll"
+
+P10                     RCDATA                  "Install\\precise\\Vista.dll"
+
+X101                    RCDATA                  "Uninstall\\Adobe AIR.dll"
+
+X501                    RCDATA                  "Uninstall\\msvcp120.dll"
+
+X601                    RCDATA                  "Uninstall\\msvcr120.dll"
+
+X701                    RCDATA                  "Uninstall\\NPSWF32.dll"
+
+XU1                     RCDATA                  "Uninstall\\cg.dll"
+
+XU2                     RCDATA                  "Uninstall\\cgGL.dll"
+
+XU3                     RCDATA                  "Uninstall\\cgD3D9.dll"
+
+XU4                     RCDATA                  "Uninstall\\tbb.dll"
+
+XU5                     RCDATA                  "Uninstall\\D3DX9_39.dll"
+
+ENB0                    RCDATA                  "ENB\\key_codes.txt"
+
+ENB1                    RCDATA                  "ENB\\enbseries.ini"
+
+ENB2                    RCDATA                  "ENB\\enbseries.dll"
+
+ENB3                    RCDATA                  "ENB\\enbmoonbump.tga"
+
+ENB4                    RCDATA                  "ENB\\enbmoon.tga"
+
+ENB5                    RCDATA                  "ENB\\enbinjector.ini"
+
+ENB6                    RCDATA                  "ENB\\ENBInjector.exe"
+
+ENB7                    RCDATA                  "ENB\\enbeffect.fx"
+
+ENB8                    RCDATA                  "ENB\\enbdetail.dds"
+
+ENB9                    RCDATA                  "ENB\\enbclouds.fx"
+
+ENB10                   RCDATA                  "ENB\\enbbloom.fx"
+
+ENB11                   RCDATA                  "ENB\\shaderinput\\psh2DF967C6.txt"
+
+ENB12                   RCDATA                  "ENB\\shaderinput\\psh8DB4CDB2.txt"
+
+ENB13                   RCDATA                  "ENB\\shaderinput\\psh323E9BB8.txt"
+
+ENB14                   RCDATA                  "ENB\\shaderinput\\pshF5256B40.txt"
+
+ENB15                   RCDATA                  "ENB\\effectv2gamecolors\\enbeffect.fx"
+
+ENB16                   RCDATA                  "ENB\\effectv2\\enbeffect.fx"
+
+ENB17                   RCDATA                  "ENB\\effectv1gamecolors\\enbeffect.fx"
+
+ENB18                   RCDATA                  "ENB\\effectv1\\enbeffect.fx"
+
+RES0                    RCDATA                  "ReShade\\ReShade_Setup_3.0.5.exe"
+
+RES1                    RCDATA                  "ReShade\\Instructions.txt"
+
+DX0                     RCDATA                  "DirectX\\Apr2005_d3dx9_25_x86.cab"
+
+DX1                     RCDATA                  "DirectX\\Apr2006_d3dx9_30_x86.cab"
+
+DX2                     RCDATA                  "DirectX\\Apr2006_MDX1_x86.cab"
+
+DX3                     RCDATA                  "DirectX\\Apr2006_MDX1_x86_Archive.cab"
+
+DX4                     RCDATA                  "DirectX\\Apr2006_XACT_x86.cab"
+
+DX5                     RCDATA                  "DirectX\\Apr2006_xinput_x86.cab"
+
+DX6                     RCDATA                  "DirectX\\APR2007_d3dx9_33_x86.cab"
+
+DX7                     RCDATA                  "DirectX\\APR2007_d3dx10_33_x86.cab"
+
+DX8                     RCDATA                  "DirectX\\APR2007_XACT_x86.cab"
+
+DX9                     RCDATA                  "DirectX\\APR2007_xinput_x86.cab"
+
+DX10                    RCDATA                  "DirectX\\Aug2005_d3dx9_27_x86.cab"
+
+DX11                    RCDATA                  "DirectX\\AUG2006_XACT_x86.cab"
+
+DX12                    RCDATA                  "DirectX\\AUG2006_xinput_x86.cab"
+
+DX13                    RCDATA                  "DirectX\\AUG2007_d3dx9_35_x86.cab"
+
+DX14                    RCDATA                  "DirectX\\AUG2007_d3dx10_35_x86.cab"
+
+DX15                    RCDATA                  "DirectX\\AUG2007_XACT_x86.cab"
+
+DX16                    RCDATA                  "DirectX\\Aug2008_d3dx9_39_x86.cab"
+
+DX17                    RCDATA                  "DirectX\\Aug2008_d3dx10_39_x86.cab"
+
+DX18                    RCDATA                  "DirectX\\Aug2008_XACT_x86.cab"
+
+DX19                    RCDATA                  "DirectX\\Aug2008_XAudio_x86.cab"
+
+DX20                    RCDATA                  "DirectX\\Aug2009_D3DCompiler_42_x86.cab"
+
+DX21                    RCDATA                  "DirectX\\Aug2009_d3dcsx_42_x86.cab"
+
+DX22                    RCDATA                  "DirectX\\Aug2009_d3dx9_42_x86.cab"
+
+DX23                    RCDATA                  "DirectX\\Aug2009_d3dx10_42_x86.cab"
+
+DX24                    RCDATA                  "DirectX\\Aug2009_d3dx11_42_x86.cab"
+
+DX25                    RCDATA                  "DirectX\\Aug2009_XACT_x86.cab"
+
+DX26                    RCDATA                  "DirectX\\Aug2009_XAudio_x86.cab"
+
+DX27                    RCDATA                  "DirectX\\Dec2005_d3dx9_28_x86.cab"
+
+DX28                    RCDATA                  "DirectX\\DEC2006_d3dx9_32_x86.cab"
+
+DX29                    RCDATA                  "DirectX\\DEC2006_d3dx10_00_x86.cab"
+
+DX30                    RCDATA                  "DirectX\\DEC2006_XACT_x86.cab"
+
+DX31                    RCDATA                  "DirectX\\DSETUP.dll"
+
+DX32                    RCDATA                  "DirectX\\dsetup32.dll"
+
+DX33                    RCDATA                  "DirectX\\dxdllreg_x86.cab"
+
+DX34                    RCDATA                  "DirectX\\DXSETUP.exe"
+
+DX35                    RCDATA                  "DirectX\\dxupdate.cab"
+
+DX36                    RCDATA                  "DirectX\\Feb2005_d3dx9_24_x86.cab"
+
+DX37                    RCDATA                  "DirectX\\Feb2006_d3dx9_29_x86.cab"
+
+DX38                    RCDATA                  "DirectX\\Feb2006_XACT_x86.cab"
+
+DX39                    RCDATA                  "DirectX\\FEB2007_XACT_x86.cab"
+
+DX40                    RCDATA                  "DirectX\\Feb2010_X3DAudio_x86.cab"
+
+DX41                    RCDATA                  "DirectX\\Feb2010_XACT_x86.cab"
+
+DX42                    RCDATA                  "DirectX\\Feb2010_XAudio_x86.cab"
+
+DX43                    RCDATA                  "DirectX\\Jun2005_d3dx9_26_x86.cab"
+
+DX44                    RCDATA                  "DirectX\\JUN2006_XACT_x86.cab"
+
+DX45                    RCDATA                  "DirectX\\JUN2007_d3dx9_34_x86.cab"
+
+DX46                    RCDATA                  "DirectX\\JUN2007_d3dx10_34_x86.cab"
+
+DX47                    RCDATA                  "DirectX\\JUN2007_XACT_x86.cab"
+
+DX48                    RCDATA                  "DirectX\\JUN2008_d3dx9_38_x86.cab"
+
+DX49                    RCDATA                  "DirectX\\JUN2008_d3dx10_38_x86.cab"
+
+DX50                    RCDATA                  "DirectX\\JUN2008_X3DAudio_x86.cab"
+
+DX51                    RCDATA                  "DirectX\\JUN2008_XACT_x86.cab"
+
+DX52                    RCDATA                  "DirectX\\JUN2008_XAudio_x86.cab"
+
+DX53                    RCDATA                  "DirectX\\Jun2010_D3DCompiler_43_x86.cab"
+
+DX54                    RCDATA                  "DirectX\\Jun2010_d3dcsx_43_x86.cab"
+
+DX55                    RCDATA                  "DirectX\\Jun2010_d3dx9_43_x86.cab"
+
+DX56                    RCDATA                  "DirectX\\Jun2010_d3dx10_43_x86.cab"
+
+DX57                    RCDATA                  "DirectX\\Jun2010_d3dx11_43_x86.cab"
+
+DX58                    RCDATA                  "DirectX\\Jun2010_XACT_x86.cab"
+
+DX59                    RCDATA                  "DirectX\\Jun2010_XAudio_x86.cab"
+
+DX60                    RCDATA                  "DirectX\\Mar2008_d3dx9_37_x86.cab"
+
+DX61                    RCDATA                  "DirectX\\Mar2008_d3dx10_37_x86.cab"
+
+DX62                    RCDATA                  "DirectX\\Mar2008_X3DAudio_x86.cab"
+
+DX63                    RCDATA                  "DirectX\\Mar2008_XACT_x86.cab"
+
+DX64                    RCDATA                  "DirectX\\Mar2008_XAudio_x86.cab"
+
+DX65                    RCDATA                  "DirectX\\Mar2009_d3dx9_41_x86.cab"
+
+DX66                    RCDATA                  "DirectX\\Mar2009_d3dx10_41_x86.cab"
+
+DX67                    RCDATA                  "DirectX\\Mar2009_X3DAudio_x86.cab"
+
+DX68                    RCDATA                  "DirectX\\Mar2009_XACT_x86.cab"
+
+DX69                    RCDATA                  "DirectX\\Mar2009_XAudio_x86.cab"
+
+DX70                    RCDATA                  "DirectX\\Nov2007_d3dx9_36_x86.cab"
+
+DX71                    RCDATA                  "DirectX\\Nov2007_d3dx10_36_x86.cab"
+
+DX72                    RCDATA                  "DirectX\\NOV2007_X3DAudio_x86.cab"
+
+DX73                    RCDATA                  "DirectX\\NOV2007_XACT_x86.cab"
+
+DX74                    RCDATA                  "DirectX\\Nov2008_d3dx9_40_x86.cab"
+
+DX75                    RCDATA                  "DirectX\\Nov2008_d3dx10_40_x86.cab"
+
+DX76                    RCDATA                  "DirectX\\Nov2008_X3DAudio_x86.cab"
+
+DX77                    RCDATA                  "DirectX\\Nov2008_XACT_x86.cab"
+
+DX78                    RCDATA                  "DirectX\\Nov2008_XAudio_x86.cab"
+
+DX79                    RCDATA                  "DirectX\\Oct2005_xinput_x86.cab"
+
+DX80                    RCDATA                  "DirectX\\OCT2006_d3dx9_31_x86.cab"
+
+DX81                    RCDATA                  "DirectX\\OCT2006_XACT_x86.cab"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+MAINICON                ICON                    "icon.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,0,2,9
+ PRODUCTVERSION 2,0,2,9
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000904b0"
+        BEGIN
+            VALUE "CompanyName", "https://lolupdater.com"
+            VALUE "FileDescription", "LoLUpdater - FPS Booster for League of Legends"
+            VALUE "FileVersion", "2.0.2.9"
+            VALUE "InternalName", "LoLUpdater.exe"
+            VALUE "LegalCopyright", "Copyright (C) 2014-2016 Elias Gudsson"
+            VALUE "OriginalFilename", "LoLUpdater.exe"
+            VALUE "ProductName", "LoLUpdater"
+            VALUE "ProductVersion", "2.0.2.9"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x9, 1200
+    END
+END
+
+#endif    // Swedish (Sweden) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
