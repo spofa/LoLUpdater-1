@@ -37,7 +37,6 @@ END
 //
 // RCDATA
 //
-CEF                      RCDATA                  "Install\\libcef.dll"
 
 XP                      RCDATA                  "Install\\XP.dll"
 
@@ -153,7 +152,7 @@ XU4                     RCDATA                  "Uninstall\\tbb.dll"
 
 XU5                     RCDATA                  "Uninstall\\D3DX9_39.dll"
 
-XU6						RCDATA					"Uninstall\\msvcp140.dll"
+XU6                     RCDATA                  "Uninstall\\msvcp140.dll"
 
 ENB0                    RCDATA                  "ENB\\key_codes.txt"
 
@@ -378,8 +377,8 @@ MAINICON                ICON                    "icon.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,3,2
- PRODUCTVERSION 2,0,3,2
+ FILEVERSION 2,0,3,3
+ PRODUCTVERSION 2,0,3,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -396,12 +395,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "https://lolupdater.com"
             VALUE "FileDescription", "LoLUpdater - FPS Booster for League of Legends"
-            VALUE "FileVersion", "2.0.3.2"
+            VALUE "FileVersion", "2.0.3.3"
             VALUE "InternalName", "LoLUpdater.exe"
             VALUE "LegalCopyright", "Copyright (C) 2014-2016 Elias Gudsson"
             VALUE "OriginalFilename", "LoLUpdater.exe"
             VALUE "ProductName", "LoLUpdater"
-            VALUE "ProductVersion", "2.0.3.2"
+            VALUE "ProductVersion", "2.0.3.3"
         END
     END
     BLOCK "VarFileInfo"

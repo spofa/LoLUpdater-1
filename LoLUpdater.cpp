@@ -1,4 +1,4 @@
-#define fileversion L"2.0.3.2"
+#define fileversion L"2.0.3.3"
 #include "resource.h"
 #include <Windows.h>
 #include <stdio.h>
@@ -22,7 +22,7 @@ wchar_t enb[16][MAX_PATH + 1];
 wchar_t client[5][MAX_PATH + 1]; // AIR, PATCH, GAME, BETA
 wchar_t adobe[2][MAX_PATH + 1]; // Adobe AIR, Adobe FLASH
 wchar_t cgbuf[3][MAX_PATH + 1]; // CG, GL, D3D9
-wchar_t instdir[6][MAX_PATH + 1]; // REGULAR, GARENA, QQ, ADMIN, ALPHA
+wchar_t instdir[6][MAX_PATH + 1]; // REGULAR, GARENA, QQ, ADMIN, BETA
 wchar_t gbpatch[MAX_PATH + 1];
 wchar_t buff[3][MAX_PATH + 1];
 wchar_t DXSETUP[MAX_PATH + 1];
@@ -1129,23 +1129,45 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		std::thread t2(LoLCheck);
 		t2.join();
 		CheckAndKill(L"ENBInjector.exe");
-		msvccopy(L"X501", L"X601");
+
 		if (rclient)
 		{
 			ExtractResource(L"x101", adobe[0], true);
 			ExtractResource(L"x701", adobe[1], true);
+
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[0]);
+			ExtractResource(L"x501", svc, true);
+
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[1]);
+			ExtractResource(L"x601", svc, true);
 		}
 
 		ExtractResource(L"xu1", cgbuf[0], true);
 		ExtractResource(L"xu2", cgbuf[1], true);
 		ExtractResource(L"xu3", cgbuf[2], true);
 		ExtractResource(L"xu4", tbb, true);
+
+
 		PCombine(buff[0], client[2], L"d3d9.dll");
 		PCombine(buff[1], client[2], L"reshade-shaders");
 		PCombine(buff[2], client[2], L"d3d9.ini");
-		DeleteFile(buff[0]);
-		RmDir(buff[1]);
-		DeleteFile(buff[2]);
+		if (std::wifstream(buff[0]).good())
+		{
+			DeleteFile(buff[0]);
+		}
+		if (dirExists(buff[1]))
+		{
+			RmDir(buff[1]);
+		}
+	
+
+		if (std::wifstream(buff[2]).good())
+		{
+			DeleteFile(buff[2]);
+		}
+
 
 		if(betaclient)
 		{
