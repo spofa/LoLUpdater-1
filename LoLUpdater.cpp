@@ -1,6 +1,7 @@
-#define fileversion L"2.0.2.9"
+#define fileversion L"2.0.3.2"
 #include "resource.h"
 #include <Windows.h>
+#include <stdio.h>
 #include <fstream>
 #include <stdint.h>
 #include <Shlwapi.h>
@@ -11,8 +12,7 @@
 #include <codecvt>
 #include <iostream>
 #include <thread>
-const std::wstring shade = L"ReShade_Setup_3.0.5.exe";
-const std::wstring shade2 = L"Instructions.txt";
+
 wchar_t gdx[2][MAX_PATH + 1];
 wchar_t Reshade[2][MAX_PATH + 1];
 wchar_t DXBUFFER[36][MAX_PATH + 1];
@@ -40,10 +40,10 @@ bool rclient = false;
 wchar_t tbb[MAX_PATH + 1];
 wchar_t loldir[MAX_PATH + 1];
 const wchar_t *ComboBoxItems[] = { L"Fast TBB.dll", L"Precise TBB.dll", L"Strict TBB.dll" };
-wchar_t msvc[6][MAX_PATH + 1] = { L"msvcp120", L"msvcr120", L"concrt140", L"vcruntime140", L"ucrtbase", L"msvcp140" };
-wchar_t adobef[2][MAX_PATH + 1] = { L"Adobe AIR",  L"NPSWF32" };
-wchar_t cg[3][MAX_PATH + 1] = { L"cg" , L"cgGL", L"cgD3D9" };
-wchar_t tbbfile[MAX_PATH + 1] = L"tbb";
+wchar_t msvc[6][MAX_PATH + 1] = { L"msvcp120.dll", L"msvcr120.dll", L"concrt140.dll", L"vcruntime140.dll", L"ucrtbase.dll", L"msvcp140.dll" };
+wchar_t adobef[2][MAX_PATH + 1] = { L"Adobe AIR",  L"NPSWF32.dll" };
+wchar_t cg[3][MAX_PATH + 1] = { L"cg.dll" , L"cgGL.dll", L"cgD3D9.dll" };
+wchar_t tbbfile[MAX_PATH + 1] = L"tbb.dll";
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 std::basic_string<wchar_t>line;
 std::wifstream Myfile;
@@ -567,7 +567,6 @@ void msvccopy(std::wstring const& MSVCP, std::wstring const& MSVCR)
 		PCombine(svc, client[1], msvc[1]);
 		ExtractResource(MSVCR, svc, true);
 	}
-
 }
 
 
@@ -674,6 +673,14 @@ bool Is64BitWindows()
 
 }
 
+bool IsRunningInWine()
+{
+	HMODULE ntdllMod = GetModuleHandle(L"ntdll.dll");
+	if (ntdllMod && GetProcAddress(ntdllMod, "wine_get_version"))
+		return true;
+	return false;
+}
+
 bool dirExists(const std::wstring& dirName_in)
 {
 	DWORD ftyp = GetFileAttributes(dirName_in.c_str());
@@ -776,80 +783,70 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 		msvccopy(L"X2", L"X3");
 
-		if (_wdupenv_s(&pValue, &len, L"windir") == 0)
+		if (!IsRunningInWine())
 		{
-
 			DWORD dwVersion = GetVersion();
 
-			switch((DWORD)(LOBYTE(LOWORD(dwVersion))))
-			{ 
-				case 10:
-					SIMDCheck(L"x6", L"x9", L"x12", L"S3", L"S6", L"S9", L"P3", L"P6", L"P9");
+			switch ((DWORD)(LOBYTE(LOWORD(dwVersion))))
+			{
+			case 10:
+				SIMDCheck(L"x6", L"x9", L"x12", L"S3", L"S6", L"S9", L"P3", L"P6", L"P9");
+				break;
+
+			case 6:
+
+				switch ((DWORD)(HIBYTE(LOWORD(dwVersion))))
+				{
+				case 2:
+					SIMDCheck(L"x5", L"x8", L"x11", L"S8", L"S5", L"S2", L"P8", L"P5", L"P2");
 					break;
 
-				case 6:
-
-					switch ((DWORD)(HIBYTE(LOWORD(dwVersion))))
-					{
-					case 2:
-						SIMDCheck(L"x5", L"x8", L"x11", L"S8", L"S5", L"S2", L"P8", L"P5", L"P2");
-						break;
-
-					case 1:
-						SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
-						break;
-
-					case 0:
-						if (strict)
-						{
-							ExtractResource(L"S10", tbb, true);
-						}
-						else if (precise)
-						{
-							ExtractResource(L"P10", tbb, true);
-						}
-						else
-						{
-							ExtractResource(L"x13", tbb, true);
-						}
-						break;
-					}
-
+				case 1:
+					SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
 					break;
-				case 5:
 
+				case 0:
 					if (strict)
 					{
-						ExtractResource(L"XPS", tbb, true);
+						ExtractResource(L"S10", tbb, true);
 					}
 					else if (precise)
-						{
-							ExtractResource(L"XPP", tbb, true);
-						}
-						else
-						{
-							ExtractResource(L"XP", tbb, true);
-						}
-
+					{
+						ExtractResource(L"P10", tbb, true);
+					}
+					else
+					{
+						ExtractResource(L"x13", tbb, true);
+					}
 					break;
+				}
+
+				break;
+			case 5:
+
+				if (strict)
+				{
+					ExtractResource(L"XPS", tbb, true);
+				}
+				else if (precise)
+				{
+					ExtractResource(L"XPP", tbb, true);
+				}
+				else
+				{
+					ExtractResource(L"XP", tbb, true);
+				}
+
+				break;
 
 			}
-
 		}
 		else
 		{
-			std::wcout << L"You are not on Windows" << std::endl;
+			std::wcout << L"Running on Wine" << std::endl;
 			SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
 		}
 			
-
-			*svc = '\0';
-			PCombine(svc, loldir, msvc[0]);
-			ExtractResource(L"x2", svc, true);
-
-			*svc = '\0';
-			PCombine(svc, loldir, msvc[1]);
-			ExtractResource(L"x3", svc, true);
 
 		ExtractResource(L"xa1", cgbuf[0], true);
 		ExtractResource(L"xa2", cgbuf[1], true);
@@ -860,10 +857,6 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			*svc = '\0';
 			PCombine(svc, client[4], L"d3dcompiler_47.dll");
 			UnblockFile(svc);
-
-			*svc = '\0';
-			PCombine(svc, client[4], L"rgDownload_R.dll");
-			ExtractResource(L"RIOT", svc, true);
 
 			*svc = '\0';
 			PCombine(svc, client[4], msvc[2]);
@@ -897,17 +890,22 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			*svc = '\0';
 			PCombine(svc, loldir, msvc[5]);
 			ExtractResource(L"CON4", svc, true);
-
-
 		}
-		
-		if(rclient)
+
+		if (rclient)
 		{
+
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[0]);
+			ExtractResource(L"x2", svc, true);
+
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[1]);
+			ExtractResource(L"x3", svc, true);
+
 			ExtractResource(L"xAA", adobe[0], true);
 			ExtractResource(L"xBB", adobe[1], true);
 		}
-
-
 
 		if(directx)
 		{
@@ -1162,6 +1160,26 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			*svc = '\0';
 			PCombine(svc, client[4], msvc[4]);
 			ExtractResource(L"CONx3", svc, true);
+
+			*svc = '\0';
+			PCombine(svc, client[4], msvc[5]);
+			ExtractResource(L"XU6", svc, true);
+
+
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[2]);
+			ExtractResource(L"CONx", svc, true);
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[3]);
+			ExtractResource(L"CONx2", svc, true);
+
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[4]);
+			ExtractResource(L"CONx3", svc, true);
+
+			*svc = '\0';
+			PCombine(svc, loldir, msvc[5]);
+			ExtractResource(L"XU6", svc, true);
 		}
 
 		if (std::wifstream(instdir[1]).good())
@@ -1207,8 +1225,7 @@ LRESULT CALLBACK ButtonProc3(HWND, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_LBUTTONDOWN:
 		Msg = {};
-		PCombine(Reshade[0], cwd, shade2);
-		PCombine(Reshade[1], cwd, shade);
+	
 
 		ExtractResource(L"RES1", Reshade[0], false);
 		ExtractResource(L"RES0", Reshade[1], true);
@@ -1623,7 +1640,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 
 			PCombine(adobe[1], client[3], L"Resources");
 			PAppend(adobe[1], adobef[1]);
-			wcsncat_s(adobe[1], _countof(adobe[1]), DLL.c_str(), _TRUNCATE);
 		}
 
 		PCombine(client[1], loldir, rads.c_str());
@@ -1643,12 +1659,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 		PAppend(client[2], dep.c_str());
 
 		PCombine(client[4], loldir, rads.c_str());
-		PAppend(client[4], L"projects");
+		PAppend(client[4], proj.c_str());
 		PAppend(client[4], L"league_client");
+		PAppend(client[4], rel.c_str());
 		if (dirExists(client[4]))
 		{
+			
+			
 			betaclient = true;
-			PAppend(client[4], rel.c_str());
 			*svc = '\0';
 			PCombine(svc, client[4], L"installer");
 			del(std::wstring(svc).c_str());
@@ -1656,6 +1674,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 
 			FindLatest(client[4]);
 			PAppend(client[4], dep.c_str());
+
+			
 		}
 	}
 	else
@@ -1675,23 +1695,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 
 		PCombine(adobe[1], client[3], L"Resources");
 		PAppend(adobe[1], adobef[1]);
-		wcsncat_s(adobe[1], _countof(adobe[1]), DLL.c_str(), _TRUNCATE);
 
 		PCombine(gdx[0], client[2], L"D3DX9_39.dll");
 		PCombine(gdx[1], client[2], L"D3DX9_43.dll");
 	}
 
-	wcsncat_s(tbbfile, _countof(tbbfile), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(msvc[0], _countof(msvc[0]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(msvc[1], _countof(msvc[1]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(msvc[2], _countof(msvc[2]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(msvc[3], _countof(msvc[3]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(msvc[4], _countof(msvc[4]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(msvc[5], _countof(msvc[5]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(cg[0], _countof(cg[0]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(cg[1], _countof(cg[1]), DLL.c_str(), _TRUNCATE);
-	wcsncat_s(cg[2], _countof(cg[2]), DLL.c_str(), _TRUNCATE);
-
+	PCombine(Reshade[0], cwd, L"Instructions.txt");
+	PCombine(Reshade[1], cwd, L"ReShade_Setup_3.0.5.exe");
 	PCombine(cgbuf[0], client[2], cg[0]);
 	PCombine(cgbuf[1], client[2], cg[1]);
 	PCombine(cgbuf[2], client[2], cg[2]);
