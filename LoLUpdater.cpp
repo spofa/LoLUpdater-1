@@ -1,4 +1,4 @@
-#define fileversion L"2.0.3.3"
+#define fileversion L"2.0.3.4"
 #include "resource.h"
 #include <Windows.h>
 #include <stdio.h>
@@ -23,15 +23,12 @@ wchar_t client[5][MAX_PATH + 1]; // AIR, PATCH, GAME, BETA
 wchar_t adobe[2][MAX_PATH + 1]; // Adobe AIR, Adobe FLASH
 wchar_t cgbuf[3][MAX_PATH + 1]; // CG, GL, D3D9
 wchar_t instdir[6][MAX_PATH + 1]; // REGULAR, GARENA, QQ, ADMIN, BETA
-wchar_t gbpatch[MAX_PATH + 1];
 wchar_t buff[3][MAX_PATH + 1];
 wchar_t DXSETUP[MAX_PATH + 1];
 wchar_t temp[MAX_PATH + 1];
 wchar_t Config[MAX_PATH + 1];
 wchar_t tempo[MAX_PATH + 1];
-wchar_t versiontxt[MAX_PATH + 1];
-wchar_t updated[MAX_PATH + 1];
-wchar_t changelog[MAX_PATH + 1];
+wchar_t autoupdater[3][MAX_PATH + 1];
 std::wstringstream wss;
 wchar_t logbuffer[MAX_PATH + 1];
 wchar_t svc[MAX_PATH + 1];
@@ -40,10 +37,8 @@ bool rclient = false;
 wchar_t tbb[MAX_PATH + 1];
 wchar_t loldir[MAX_PATH + 1];
 const wchar_t *ComboBoxItems[] = { L"Fast TBB.dll", L"Precise TBB.dll", L"Strict TBB.dll" };
-wchar_t msvc[6][MAX_PATH + 1] = { L"msvcp120.dll", L"msvcr120.dll", L"concrt140.dll", L"vcruntime140.dll", L"ucrtbase.dll", L"msvcp140.dll" };
-wchar_t adobef[2][MAX_PATH + 1] = { L"Adobe AIR",  L"NPSWF32.dll" };
-wchar_t cg[3][MAX_PATH + 1] = { L"cg.dll" , L"cgGL.dll", L"cgD3D9.dll" };
-wchar_t tbbfile[MAX_PATH + 1] = L"tbb.dll";
+wchar_t files[11][MAX_PATH + 1] = { L"msvcp120.dll", L"msvcr120.dll", L"concrt140.dll", L"vcruntime140.dll", L"ucrtbase.dll", L"msvcp140.dll", L"cg.dll" , L"cgGL.dll", L"cgD3D9.dll", L"tbb.dll", L"NPSWF32.dll" };
+wchar_t adobef[MAX_PATH + 1] = { L"Adobe AIR" };
 wchar_t* cwd(_wgetcwd(nullptr, 0));
 std::basic_string<wchar_t>line;
 std::wifstream Myfile;
@@ -550,21 +545,21 @@ void msvccopy(std::wstring const& MSVCP, std::wstring const& MSVCR)
 {
 
 	*svc = '\0';
-	PCombine(svc, client[2], msvc[0]);
+	PCombine(svc, client[2], files[0]);
 	ExtractResource(MSVCP, svc, true);
 
 	*svc = '\0';
-	PCombine(svc, client[2], msvc[1]);
+	PCombine(svc, client[2], files[1]);
 	ExtractResource(MSVCR, svc, true);
 
 	if (StandardLoL())
 	{
 		*svc = '\0';
-		PCombine(svc, client[1], msvc[0]);
+		PCombine(svc, client[1], files[0]);
 		ExtractResource(MSVCP, svc, true);
 
 		*svc = '\0';
-		PCombine(svc, client[1], msvc[1]);
+		PCombine(svc, client[1], files[1]);
 		ExtractResource(MSVCR, svc, true);
 	}
 }
@@ -859,36 +854,36 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			UnblockFile(svc);
 
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[2]);
+			PCombine(svc, client[4], files[2]);
 			ExtractResource(L"CON", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[3]);
+			PCombine(svc, client[4], files[3]);
 			ExtractResource(L"CON2", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[4]);
+			PCombine(svc, client[4], files[4]);
 			ExtractResource(L"CON3", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[5]);
+			PCombine(svc, client[4], files[5]);
 			ExtractResource(L"CON4", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[2]);
+			PCombine(svc, loldir, files[2]);
 			ExtractResource(L"CON", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[3]);
+			PCombine(svc, loldir, files[3]);
 			ExtractResource(L"CON2", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[4]);
+			PCombine(svc, loldir, files[4]);
 			ExtractResource(L"CON3", svc, true);
 
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[5]);
+			PCombine(svc, loldir, files[5]);
 			ExtractResource(L"CON4", svc, true);
 		}
 
@@ -896,11 +891,11 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[0]);
+			PCombine(svc, loldir, files[0]);
 			ExtractResource(L"x2", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[1]);
+			PCombine(svc, loldir, files[1]);
 			ExtractResource(L"x3", svc, true);
 
 			ExtractResource(L"xAA", adobe[0], true);
@@ -1088,7 +1083,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			exit(0);
 		}
-		if (StandardLoL())
+		else if (rclient & StandardLoL())
 		{
 
 			ei = {};
@@ -1136,11 +1131,11 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			ExtractResource(L"x701", adobe[1], true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[0]);
+			PCombine(svc, loldir, files[0]);
 			ExtractResource(L"x501", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[1]);
+			PCombine(svc, loldir, files[1]);
 			ExtractResource(L"x601", svc, true);
 		}
 
@@ -1173,34 +1168,34 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[2]);
+			PCombine(svc, client[4], files[2]);
 			ExtractResource(L"CONx", svc, true);
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[3]);
+			PCombine(svc, client[4], files[3]);
 			ExtractResource(L"CONx2", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[4]);
+			PCombine(svc, client[4], files[4]);
 			ExtractResource(L"CONx3", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, client[4], msvc[5]);
+			PCombine(svc, client[4], files[5]);
 			ExtractResource(L"XU6", svc, true);
 
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[2]);
+			PCombine(svc, loldir, files[2]);
 			ExtractResource(L"CONx", svc, true);
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[3]);
+			PCombine(svc, loldir, files[3]);
 			ExtractResource(L"CONx2", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[4]);
+			PCombine(svc, loldir, files[4]);
 			ExtractResource(L"CONx3", svc, true);
 
 			*svc = '\0';
-			PCombine(svc, loldir, msvc[5]);
+			PCombine(svc, loldir, files[5]);
 			ExtractResource(L"XU6", svc, true);
 		}
 
@@ -1561,14 +1556,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	_wfreopen_s(&f1, L"CONOUT$", L"w", stdout);
 	std::wcin.clear();
 	std::wcout.clear();
-	auto hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	SetConsoleTextAttribute(hConsole, FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 	SetConsoleTitle(L"LoLUpdater-Autoupdater");
 
-	PCombine(versiontxt, cwd, L"version.txt");
-	if (URLDownloadToFile(nullptr, L"https://lolupdater.com/downloads/version.txt", versiontxt, 0, nullptr) == S_OK)
+	PCombine(autoupdater[0], cwd, L"version.txt");
+	if (URLDownloadToFile(nullptr, L"https://lolupdater.com/downloads/version.txt", autoupdater[0], 0, nullptr) == S_OK)
 	{
-		std::wifstream in(versiontxt);
+		std::wifstream in(autoupdater[0]);
 		std::wstringstream buffer;
 		buffer << in.rdbuf();
 		Version latest(buffer.str());
@@ -1576,14 +1570,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 		Version current(fileversion);
 
 
-		PCombine(updated, cwd, L"LoLUpdaterUpdated.zip");
+		PCombine(autoupdater[2], cwd, L"LoLUpdaterUpdated.zip");
 		if (current < latest)
 		{
 
-			PCombine(changelog, cwd, L"Changelog.txt");
-			if (URLDownloadToFile(nullptr, L"https://lolupdater.com/downloads/changelog.txt", changelog, 0, nullptr) == S_OK)
+			PCombine(autoupdater[1], cwd, L"Changelog.txt");
+			if (URLDownloadToFile(nullptr, L"https://lolupdater.com/downloads/changelog.txt", autoupdater[1], 0, nullptr) == S_OK)
 			{
-				std::wifstream file(changelog);
+				std::wifstream file(autoupdater[1]);
 				if (file.good())
 				{
 					std::wstringstream bufferz;
@@ -1595,7 +1589,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 					std::wcout << bufferz.str().c_str() << std::endl;
 				}
 			}
-			DeleteFile(changelog);
+			DeleteFile(autoupdater[1]);
 			if (MessageBox(nullptr, L"Download Update?", L"LoLUpdater", MB_YESNO) == IDYES)
 			{
 				CallbackHandler callbackHandler;
@@ -1603,11 +1597,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 				callbackHandler.QueryInterface(IID_IBindStatusCallback,
 					reinterpret_cast<void**>(&pBindStatusCallback));
 
-				if (URLDownloadToFile(nullptr, L"https://lolupdater.com/downloads/LoLUpdater.zip", updated, 0, pBindStatusCallback) == S_OK)
+				if (URLDownloadToFile(nullptr, L"https://lolupdater.com/downloads/LoLUpdater.zip", autoupdater[2], 0, pBindStatusCallback) == S_OK)
 				{
 					std::wstring test = L"Update saved to: ";
-					test += updated;
-					UnblockFile(updated);
+					test += autoupdater[2];
+					UnblockFile(autoupdater[2]);
 					MessageBox(nullptr, test.c_str(), L"LoLUpdater", MB_OK);
 				}
 			}
@@ -1624,7 +1618,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	}
 
 
-	DeleteFile(versiontxt);
+	DeleteFile(autoupdater[0]);
 	WNDCLASSEX wc{ sizeof(WNDCLASSEX), CS_DROPSHADOW | CS_PARENTDC, WndProc, 0, 0, hInstance, LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON)), nullptr, nullptr, nullptr, L"mainwindow", LoadIcon(hInstance, MAKEINTRESOURCE(MAINICON)) };
 
 	RegisterClassEx(&wc);
@@ -1653,15 +1647,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 			FindLatest(client[0]);
 			PAppend(client[0], dep.c_str());
 
-			PCombine(client[3], client[0], adobef[0]);
+			PCombine(client[3], client[0], adobef);
 			PAppend(client[3], L"Versions");
 			PAppend(client[3], L"1.0");
 
-			PCombine(adobe[0], client[3], adobef[0]);
+			PCombine(adobe[0], client[3], adobef);
 			wcsncat_s(adobe[0], _countof(adobe[0]), DLL.c_str(), _TRUNCATE);
 
 			PCombine(adobe[1], client[3], L"Resources");
-			PAppend(adobe[1], adobef[1]);
+			PAppend(adobe[1], files[10]);
 		}
 
 		PCombine(client[1], loldir, rads.c_str());
@@ -1706,17 +1700,17 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 		PCombine(client[0], loldir, L"Air");
 		rclient = true;
 
-		PCombine(client[3], client[0], adobef[0]);
+		PCombine(client[3], client[0], adobef);
 		PAppend(client[3], L"Versions");
 		PAppend(client[3], L"1.0");
 
 
 
-		PCombine(adobe[0], client[3], adobef[0]);
+		PCombine(adobe[0], client[3], adobef);
 		wcsncat_s(adobe[0], _countof(adobe[0]), DLL.c_str(), _TRUNCATE);
 
 		PCombine(adobe[1], client[3], L"Resources");
-		PAppend(adobe[1], adobef[1]);
+		PAppend(adobe[1], files[10]);
 
 		PCombine(gdx[0], client[2], L"D3DX9_39.dll");
 		PCombine(gdx[1], client[2], L"D3DX9_43.dll");
@@ -1724,10 +1718,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 
 	PCombine(Reshade[0], cwd, L"Instructions.txt");
 	PCombine(Reshade[1], cwd, L"ReShade_Setup_3.0.5.exe");
-	PCombine(cgbuf[0], client[2], cg[0]);
-	PCombine(cgbuf[1], client[2], cg[1]);
-	PCombine(cgbuf[2], client[2], cg[2]);
-	PCombine(tbb, client[2], tbbfile);
+	PCombine(cgbuf[0], client[2], files[6]);
+	PCombine(cgbuf[1], client[2], files[7]);
+	PCombine(cgbuf[2], client[2], files[8]);
+	PCombine(tbb, client[2], files[9]);
 
 	PCombine(enb[0], client[2], L"key_codes.txt");
 	PCombine(enb[1], client[2], L"enbseries.ini");
