@@ -21,7 +21,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{0BB86D9C-DAE8-4A49-9902-815A3BBA6625}</ProjectGuid>
     <RootNamespace>LoLUpdater</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -84,10 +83,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>C:\build</OutDir>
-    <IncludePath>C:\Users\GUDSSON ELIAS\Desktop\boost\boost;C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(ProgramFiles)\Windows Kits\10.0\Include\um;$(ProgramFiles)\Windows Kits\10.0\Include\shared;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.14393.0\ucrt;C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.14393.0\um;C:\Program Files %28x86%29\Windows Kits\10\Include\10.0.14393.0\shared;$(IncludePath)</IncludePath>
     <LinkIncremental>false</LinkIncremental>
     <EmbedManifest>true</EmbedManifest>
-    <ExecutablePath>$(ProgramFiles)\Windows Kits\10.0\bin\x86;$(ExecutablePath)</ExecutablePath>
+    <ExecutablePath>C:\Program Files %28x86%29\Windows Kits\10\bin\10.0.14393.0\x86;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>C:\Program Files %28x86%29\Windows Kits\10\Lib\10.0.14393.0;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\Ilja\Documents\GitHub\LoLUpdater\LoLUpdater;$(IncludePath)</IncludePath>
@@ -282,11 +282,165 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="DirectX\Apr2005_d3dx9_25_x86.cab" />
+    <None Include="DirectX\Apr2006_d3dx9_30_x86.cab" />
+    <None Include="DirectX\Apr2006_MDX1_x86.cab" />
+    <None Include="DirectX\Apr2006_MDX1_x86_Archive.cab" />
+    <None Include="DirectX\Apr2006_XACT_x86.cab" />
+    <None Include="DirectX\Apr2006_xinput_x86.cab" />
+    <None Include="DirectX\APR2007_d3dx10_33_x86.cab" />
+    <None Include="DirectX\APR2007_d3dx9_33_x86.cab" />
+    <None Include="DirectX\APR2007_XACT_x86.cab" />
+    <None Include="DirectX\APR2007_xinput_x86.cab" />
+    <None Include="DirectX\Aug2005_d3dx9_27_x86.cab" />
+    <None Include="DirectX\AUG2006_XACT_x86.cab" />
+    <None Include="DirectX\AUG2006_xinput_x86.cab" />
+    <None Include="DirectX\AUG2007_d3dx10_35_x86.cab" />
+    <None Include="DirectX\AUG2007_d3dx9_35_x86.cab" />
+    <None Include="DirectX\AUG2007_XACT_x86.cab" />
+    <None Include="DirectX\Aug2008_d3dx10_39_x86.cab" />
+    <None Include="DirectX\Aug2008_d3dx9_39_x86.cab" />
+    <None Include="DirectX\Aug2008_XACT_x86.cab" />
+    <None Include="DirectX\Aug2008_XAudio_x86.cab" />
+    <None Include="DirectX\Aug2009_D3DCompiler_42_x86.cab" />
+    <None Include="DirectX\Aug2009_d3dcsx_42_x86.cab" />
+    <None Include="DirectX\Aug2009_d3dx10_42_x86.cab" />
+    <None Include="DirectX\Aug2009_d3dx11_42_x86.cab" />
+    <None Include="DirectX\Aug2009_d3dx9_42_x86.cab" />
+    <None Include="DirectX\Aug2009_XACT_x86.cab" />
+    <None Include="DirectX\Aug2009_XAudio_x86.cab" />
+    <None Include="DirectX\Dec2005_d3dx9_28_x86.cab" />
+    <None Include="DirectX\DEC2006_d3dx10_00_x86.cab" />
+    <None Include="DirectX\DEC2006_d3dx9_32_x86.cab" />
+    <None Include="DirectX\DEC2006_XACT_x86.cab" />
+    <None Include="DirectX\DSETUP.dll" />
+    <None Include="DirectX\dsetup32.dll" />
+    <None Include="DirectX\dxdllreg_x86.cab" />
+    <None Include="DirectX\DXSETUP.exe" />
+    <None Include="DirectX\dxupdate.cab" />
+    <None Include="DirectX\Feb2005_d3dx9_24_x86.cab" />
+    <None Include="DirectX\Feb2006_d3dx9_29_x86.cab" />
+    <None Include="DirectX\Feb2006_XACT_x86.cab" />
+    <None Include="DirectX\FEB2007_XACT_x86.cab" />
+    <None Include="DirectX\Feb2010_X3DAudio_x86.cab" />
+    <None Include="DirectX\Feb2010_XACT_x86.cab" />
+    <None Include="DirectX\Feb2010_XAudio_x86.cab" />
+    <None Include="DirectX\Jun2005_d3dx9_26_x86.cab" />
+    <None Include="DirectX\JUN2006_XACT_x86.cab" />
+    <None Include="DirectX\JUN2007_d3dx10_34_x86.cab" />
+    <None Include="DirectX\JUN2007_d3dx9_34_x86.cab" />
+    <None Include="DirectX\JUN2007_XACT_x86.cab" />
+    <None Include="DirectX\JUN2008_d3dx10_38_x86.cab" />
+    <None Include="DirectX\JUN2008_d3dx9_38_x86.cab" />
+    <None Include="DirectX\JUN2008_X3DAudio_x86.cab" />
+    <None Include="DirectX\JUN2008_XACT_x86.cab" />
+    <None Include="DirectX\JUN2008_XAudio_x86.cab" />
+    <None Include="DirectX\Jun2010_D3DCompiler_43_x86.cab" />
+    <None Include="DirectX\Jun2010_d3dcsx_43_x86.cab" />
+    <None Include="DirectX\Jun2010_d3dx10_43_x86.cab" />
+    <None Include="DirectX\Jun2010_d3dx11_43_x86.cab" />
+    <None Include="DirectX\Jun2010_d3dx9_43_x86.cab" />
+    <None Include="DirectX\Jun2010_XACT_x86.cab" />
+    <None Include="DirectX\Jun2010_XAudio_x86.cab" />
+    <None Include="DirectX\Mar2008_d3dx10_37_x86.cab" />
+    <None Include="DirectX\Mar2008_d3dx9_37_x86.cab" />
+    <None Include="DirectX\Mar2008_X3DAudio_x86.cab" />
+    <None Include="DirectX\Mar2008_XACT_x86.cab" />
+    <None Include="DirectX\Mar2008_XAudio_x86.cab" />
+    <None Include="DirectX\Mar2009_d3dx10_41_x86.cab" />
+    <None Include="DirectX\Mar2009_d3dx9_41_x86.cab" />
+    <None Include="DirectX\Mar2009_X3DAudio_x86.cab" />
+    <None Include="DirectX\Mar2009_XACT_x86.cab" />
+    <None Include="DirectX\Mar2009_XAudio_x86.cab" />
+    <None Include="DirectX\Nov2007_d3dx10_36_x86.cab" />
+    <None Include="DirectX\Nov2007_d3dx9_36_x86.cab" />
+    <None Include="DirectX\NOV2007_X3DAudio_x86.cab" />
+    <None Include="DirectX\NOV2007_XACT_x86.cab" />
+    <None Include="DirectX\Nov2008_d3dx10_40_x86.cab" />
+    <None Include="DirectX\Nov2008_d3dx9_40_x86.cab" />
+    <None Include="DirectX\Nov2008_X3DAudio_x86.cab" />
+    <None Include="DirectX\Nov2008_XACT_x86.cab" />
+    <None Include="DirectX\Nov2008_XAudio_x86.cab" />
+    <None Include="DirectX\Oct2005_xinput_x86.cab" />
+    <None Include="DirectX\OCT2006_d3dx9_31_x86.cab" />
+    <None Include="DirectX\OCT2006_XACT_x86.cab" />
+    <None Include="ENB\ENBInjector.exe" />
+    <None Include="ENB\enbinjector.ini" />
+    <None Include="ENB\enbseries.dll" />
+    <None Include="ENB\enbseries.ini" />
+    <None Include="Install\Adobe Air.dll" />
+    <None Include="Install\AVX-Win10.dll" />
+    <None Include="Install\AVX-Win7.dll" />
+    <None Include="Install\AVX-Win8.dll" />
+    <None Include="Install\AVX2-Win10.dll" />
+    <None Include="Install\AVX2-Win7.dll" />
+    <None Include="Install\AVX2-Win8.dll" />
+    <None Include="Install\cg.dll" />
+    <None Include="Install\cgD3D9.dll" />
+    <None Include="Install\cgGL.dll" />
+    <None Include="Install\concrt140.dll" />
+    <None Include="Install\D3DX9_43.dll" />
     <None Include="Install\msvcp120.dll" />
     <None Include="Install\msvcp140.dll" />
     <None Include="Install\msvcr120.dll" />
+    <None Include="Install\NPSWF32.dll" />
+    <None Include="Install\precise\AVX-Win10.dll" />
+    <None Include="Install\precise\AVX-Win7.dll" />
+    <None Include="Install\precise\AVX-Win8.dll" />
+    <None Include="Install\precise\AVX2-Win10.dll" />
+    <None Include="Install\precise\AVX2-Win7.dll" />
+    <None Include="Install\precise\AVX2-Win8.dll" />
+    <None Include="Install\precise\Vista.dll" />
+    <None Include="Install\precise\Win10.dll" />
+    <None Include="Install\precise\Win7.dll" />
+    <None Include="Install\precise\Win8.dll" />
+    <None Include="Install\precise\XP.dll" />
+    <None Include="Install\strict\AVX-Win10.dll" />
+    <None Include="Install\strict\AVX-Win7.dll" />
+    <None Include="Install\strict\AVX-Win8.dll" />
+    <None Include="Install\strict\AVX2-Win10.dll" />
+    <None Include="Install\strict\AVX2-Win7.dll" />
+    <None Include="Install\strict\AVX2-Win8.dll" />
+    <None Include="Install\strict\Vista.dll" />
+    <None Include="Install\strict\Win10.dll" />
+    <None Include="Install\strict\Win7.dll" />
+    <None Include="Install\strict\Win8.dll" />
+    <None Include="Install\strict\XP.dll" />
     <None Include="Install\ucrtbase.dll" />
     <None Include="Install\vcruntime140.dll" />
+    <None Include="Install\Vista.dll" />
+    <None Include="Install\Win10.dll" />
+    <None Include="Install\Win7.dll" />
+    <None Include="Install\Win8.dll" />
+    <None Include="Install\XP.dll" />
+    <None Include="ReShade\ReShade_Setup_3.0.5.exe" />
+    <None Include="Uninstall\Adobe AIR.dll" />
+    <None Include="Uninstall\cg.dll" />
+    <None Include="Uninstall\cgD3D9.dll" />
+    <None Include="Uninstall\cgGL.dll" />
+    <None Include="Uninstall\concrt140.dll" />
+    <None Include="Uninstall\D3DX9_39.dll" />
+    <None Include="Uninstall\msvcp120.dll" />
+    <None Include="Uninstall\msvcp140.dll" />
+    <None Include="Uninstall\msvcr120.dll" />
+    <None Include="Uninstall\NPSWF32.dll" />
+    <None Include="Uninstall\tbb.dll" />
+    <None Include="Uninstall\ucrtbase.dll" />
+    <None Include="Uninstall\vcruntime140.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ENB\key_codes.txt" />
+    <Text Include="ENB\shaderinput\psh2DF967C6.txt" />
+    <Text Include="ENB\shaderinput\psh323E9BB8.txt" />
+    <Text Include="ENB\shaderinput\psh8DB4CDB2.txt" />
+    <Text Include="ENB\shaderinput\pshF5256B40.txt" />
+    <Text Include="ReShade\Instructions.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="ENB\enbdetail.dds" />
+    <Image Include="ENB\enbmoon.tga" />
+    <Image Include="ENB\enbmoonbump.tga" />
+    <Image Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

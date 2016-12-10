@@ -1,4 +1,4 @@
-#define fileversion L"2.0.3.4"
+#define fileversion L"2.0.3.6"
 #include "resource.h"
 #include <Windows.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include <codecvt>
 #include <iostream>
 #include <thread>
-
+#define WIN32_LEAN_AND_MEAN
 wchar_t gdx[2][MAX_PATH + 1];
 wchar_t Reshade[2][MAX_PATH + 1];
 wchar_t DXBUFFER[36][MAX_PATH + 1];
@@ -95,6 +95,26 @@ MSG Msg;
 FILE* f;
 FILE *f1;
 VS_FIXEDFILEINFO test;
+
+
+bool IsWindowsVersionOrGreater(WORD wMajorVersion, WORD wMinorVersion, WORD wServicePackMajor)
+{
+	OSVERSIONINFOEXW osvi = { sizeof(osvi), 0, 0, 0, 0,{ 0 }, 0, 0 };
+	DWORDLONG        const dwlConditionMask = VerSetConditionMask(
+		VerSetConditionMask(
+			VerSetConditionMask(
+				0, VER_MAJORVERSION, VER_GREATER_EQUAL),
+			VER_MINORVERSION, VER_GREATER_EQUAL),
+		VER_SERVICEPACKMAJOR, VER_GREATER_EQUAL);
+
+	osvi.dwMajorVersion = wMajorVersion;
+	osvi.dwMinorVersion = wMinorVersion;
+	osvi.wServicePackMajor = wServicePackMajor;
+
+	return VerifyVersionInfoW(&osvi, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, dwlConditionMask) != FALSE;
+}
+
+
 
 
 class LimitSingleInstance
@@ -778,47 +798,46 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 		msvccopy(L"X2", L"X3");
 
+
+
+
 		if (!IsRunningInWine())
 		{
-			DWORD dwVersion = GetVersion();
 
-			switch ((DWORD)(LOBYTE(LOWORD(dwVersion))))
+
+			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINTHRESHOLD), LOBYTE(_WIN32_WINNT_WINTHRESHOLD), 0))
 			{
-			case 10:
 				SIMDCheck(L"x6", L"x9", L"x12", L"S3", L"S6", L"S9", L"P3", L"P6", L"P9");
-				break;
+			}
 
-			case 6:
+			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8), LOBYTE(_WIN32_WINNT_WIN8), 0))
+			{
+				SIMDCheck(L"x5", L"x8", L"x11", L"S8", L"S5", L"S2", L"P8", L"P5", L"P2");
+			}
 
-				switch ((DWORD)(HIBYTE(LOWORD(dwVersion))))
+			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7), LOBYTE(_WIN32_WINNT_WIN7), 0))
+			{
+				SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
+			}
+
+			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA), LOBYTE(_WIN32_WINNT_VISTA), 0))
+			{
+				if (strict)
 				{
-				case 2:
-					SIMDCheck(L"x5", L"x8", L"x11", L"S8", L"S5", L"S2", L"P8", L"P5", L"P2");
-					break;
-
-				case 1:
-					SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
-					break;
-
-				case 0:
-					if (strict)
-					{
-						ExtractResource(L"S10", tbb, true);
-					}
-					else if (precise)
-					{
-						ExtractResource(L"P10", tbb, true);
-					}
-					else
-					{
-						ExtractResource(L"x13", tbb, true);
-					}
-					break;
+					ExtractResource(L"S10", tbb, true);
 				}
+				else if (precise)
+				{
+					ExtractResource(L"P10", tbb, true);
+				}
+				else
+				{
+					ExtractResource(L"x13", tbb, true);
+				}
+			}
 
-				break;
-			case 5:
-
+			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP), LOBYTE(_WIN32_WINNT_WINXP), 0))
+			{
 				if (strict)
 				{
 					ExtractResource(L"XPS", tbb, true);
@@ -831,16 +850,19 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				{
 					ExtractResource(L"XP", tbb, true);
 				}
-
-				break;
-
 			}
+
+
 		}
 		else
 		{
 			std::wcout << L"Running on Wine" << std::endl;
 			SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
 		}
+
+
+
+
 			
 
 		ExtractResource(L"xa1", cgbuf[0], true);
