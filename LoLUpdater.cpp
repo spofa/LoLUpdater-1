@@ -1,4 +1,4 @@
-#define fileversion L"2.0.3.6"
+#define fileversion L"2.0.3.7"
 #include "resource.h"
 #include <Windows.h>
 #include <stdio.h>
@@ -1612,7 +1612,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 				}
 			}
 			DeleteFile(autoupdater[1]);
-			if (MessageBox(nullptr, L"Download Update?", L"LoLUpdater", MB_YESNO) == IDYES)
+			std::wstring dialoge;
+			dialoge += L"Download Update v";
+			dialoge += buffer.str();
+			dialoge += L"?";
+			if (MessageBox(nullptr, dialoge.c_str(), L"LoLUpdater", MB_YESNO) == IDYES)
 			{
 				CallbackHandler callbackHandler;
 				IBindStatusCallback* pBindStatusCallback = nullptr;
