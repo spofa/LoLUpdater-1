@@ -1,15 +1,13 @@
-#define fileversion L"2.0.3.7"
+#define fileversion L"2.0.3.8"
 #include "resource.h"
 #include <Windows.h>
-#include <stdio.h>
 #include <fstream>
-#include <stdint.h>
 #include <Shlwapi.h>
 #include <Shlobj.h>
 #include <sstream>
-#include <stdlib.h>
 #include <tlhelp32.h>
 #include <codecvt>
+#include <intrin.h>
 #include <iostream>
 #include <thread>
 #define WIN32_LEAN_AND_MEAN
@@ -22,7 +20,7 @@ wchar_t enb[16][MAX_PATH + 1];
 wchar_t client[5][MAX_PATH + 1]; // AIR, PATCH, GAME, BETA
 wchar_t adobe[2][MAX_PATH + 1]; // Adobe AIR, Adobe FLASH
 wchar_t cgbuf[3][MAX_PATH + 1]; // CG, GL, D3D9
-wchar_t instdir[6][MAX_PATH + 1]; // REGULAR, GARENA, QQ, ADMIN, BETA
+wchar_t instdir[7][MAX_PATH + 1]; // REGULAR, GARENA, QQ, ADMIN, BETA, TENCENT
 wchar_t buff[3][MAX_PATH + 1];
 wchar_t DXSETUP[MAX_PATH + 1];
 wchar_t temp[MAX_PATH + 1];
@@ -445,16 +443,20 @@ void CheckAndKill(std::wstring const& processName)
 	}
 }
 
-bool StandardLoL()
+bool LoL()
 {
-	return (std::wifstream(instdir[4]).good() | std::wifstream(instdir[0]).good());
+	return (std::wifstream(instdir[4]).good() || std::wifstream(instdir[0]).good() || std::wifstream(instdir[3]).good());
 }
 
+bool LoLQQ()
+{
+	return (std::wifstream(instdir[1]).good() || std::wifstream(instdir[6]).good());
+}
 
 
 void LoLCheck()
 {
-	if (StandardLoL())
+	if (LoL())
 	{
 		if (MessageBox(nullptr, L"League of Legends will now close", L"LoLUpdater", MB_YESNO) == IDYES)
 		{
@@ -462,6 +464,9 @@ void LoLCheck()
 			CheckAndKill(L"LoLPatcher.exe");
 			CheckAndKill(L"League of Legends.exe");
 			CheckAndKill(L"LeagueClient.exe");
+			CheckAndKill(L"lol.launcher.exe");
+			CheckAndKill(L"lol.launcher.admin.exe");
+
 		}
 		else
 		{
@@ -472,12 +477,13 @@ void LoLCheck()
 	{
 		if (MessageBox(nullptr, L"League of Legends will now close", L"LoLUpdater", MB_YESNO) == IDYES)
 		{
-
 			CheckAndKill(L"LoLClient.exe");
-			CheckAndKill(L"LeagueClient.exe");
-			CheckAndKill(L"LoLPatcher.exe");
+			CheckAndKill(L"LoLLauncher.exe");
+			CheckAndKill(L"League of Legends.exe");
 			CheckAndKill(L"lol.exe");
 			CheckAndKill(L"lolex.exe");
+			CheckAndKill(L"Client.exe");
+			CheckAndKill(L"lol.launcher_tencent.exe");
 		}
 		else
 		{
@@ -500,17 +506,14 @@ void UnblockFile(std::wstring const& filename)
 }
 
 
-void ExtractResource(std::wstring const& RCDATAID, std::wstring const& filename, bool unblock)
+void ExtractResource(std::wstring const& RCDATAID, std::wstring const& filename)
 {
 
 	auto hRes = FindResource(nullptr, RCDATAID.c_str(), RT_RCDATA);
 	_wfopen_s(&f, filename.c_str(), L"wb");
 	fwrite(LockResource(LoadResource(nullptr, hRes)), SizeofResource(nullptr, hRes), 1, f);
 	fclose(f);
-	if (unblock)
-	{
-		UnblockFile(filename);
-	}
+	UnblockFile(filename);
 
 }
 
@@ -566,103 +569,115 @@ void msvccopy(std::wstring const& MSVCP, std::wstring const& MSVCR)
 
 	*svc = '\0';
 	PCombine(svc, client[2], files[0]);
-	ExtractResource(MSVCP, svc, true);
+	ExtractResource(MSVCP, svc);
 
 	*svc = '\0';
 	PCombine(svc, client[2], files[1]);
-	ExtractResource(MSVCR, svc, true);
+	ExtractResource(MSVCR, svc);
 
-	if (StandardLoL())
+	if (LoL())
 	{
 		*svc = '\0';
 		PCombine(svc, client[1], files[0]);
-		ExtractResource(MSVCP, svc, true);
+		ExtractResource(MSVCP, svc);
 
 		*svc = '\0';
 		PCombine(svc, client[1], files[1]);
-		ExtractResource(MSVCR, svc, true);
+		ExtractResource(MSVCR, svc);
 	}
 }
 
+int instrset_detect(void) {
+
+	static int iset = -1;                                  // remember value for next call
+	if (iset >= 0) {
+		return iset;                                       // called before
+	}
+	iset = 0;                                              // default value
+	int abcd[4] = { 0,0,0,0 };                               // cpuid results
+	__cpuid(abcd, 0);                                        // call cpuid function 0
+	if (abcd[0] == 0) return iset;                         // no further cpuid function supported
+	__cpuid(abcd, 1);                                        // call cpuid function 1 for feature flags
+	if ((abcd[3] & (1 << 0)) == 0) return iset;           // no floating point
+	if ((abcd[3] & (1 << 23)) == 0) return iset;           // no MMX
+	if ((abcd[3] & (1 << 15)) == 0) return iset;           // no conditional move
+	if ((abcd[3] & (1 << 24)) == 0) return iset;           // no FXSAVE
+	if ((abcd[3] & (1 << 25)) == 0) return iset;           // no SSE
+	iset = 1;                                              // 1: SSE supported
+	if ((abcd[3] & (1 << 26)) == 0) return iset;           // no SSE2
+	iset = 2;                                              // 2: SSE2 supported
+	if ((abcd[2] & (1 << 0)) == 0) return iset;           // no SSE3
+	iset = 3;                                              // 3: SSE3 supported
+	if ((abcd[2] & (1 << 9)) == 0) return iset;           // no SSSE3
+	iset = 4;                                              // 4: SSSE3 supported
+	if ((abcd[2] & (1 << 19)) == 0) return iset;           // no SSE4.1
+	iset = 5;                                              // 5: SSE4.1 supported
+	if ((abcd[2] & (1 << 23)) == 0) return iset;           // no POPCNT
+	if ((abcd[2] & (1 << 20)) == 0) return iset;           // no SSE4.2
+	iset = 6;                                              // 6: SSE4.2 supported
+	if ((abcd[2] & (1 << 27)) == 0) return iset;           // no OSXSAVE
+	if ((_xgetbv(0) & 6) != 6)       return iset;           // AVX not enabled in O.S.
+	if ((abcd[2] & (1 << 28)) == 0) return iset;           // no AVX
+	iset = 7;                                              // 7: AVX supported
+	__cpuid(abcd, 7);                                        // call cpuid leaf 7 for feature flags
+	if ((abcd[1] & (1 << 5)) == 0) return iset;           // no AVX2
+	iset = 8;                                              // 8: AVX2 supported
+	return iset;
+}
 
 void SIMDCheck(std::wstring const& AVX2, std::wstring const& AVX, std::wstring const& SSE2, std::wstring const& SAVX2, std::wstring const& SAVX, std::wstring const& SSSE2, std::wstring const& PAVX2, std::wstring const& PAVX, std::wstring const& PSSE2)
 {
 
-	int cpu_id[4];
-
-	__cpuid(cpu_id, 0x00000000);
-	uint32_t max_std_fn = cpu_id[0];  // EAX
-	if (max_std_fn >= 1)
-	{
-		__cpuid(cpu_id, 0x00000001);
-
-		if (cpu_id[2] >> 28 & 1 && cpu_id[2] >> 27 & 1)
-		{
-			if ((_xgetbv(_XCR_XFEATURE_ENABLED_MASK) & 0x6) == 0x6)
-			{
-				avx = true;
-
-			}
-		}
-
-		if (max_std_fn >= 7)
-		{
-			__cpuidex(cpu_id, 0x00000007, 0x00000000);
-			// careful; we can't enable AVX2 unless the XSAVE/XGETBV checks above passed
-			if (cpu_id[1] >> 5 & 1)
-				avx2 = avx;
-		}
-	}
-
-
+	avx = instrset_detect() >= 7;
+	avx2 = instrset_detect() >= 8;
 
 
 	if (strict)
 	{
 		if (avx2)
 		{
-			ExtractResource(SAVX2, tbb, true);
+			ExtractResource(SAVX2, tbb);
 		}
-		if (avx)
+		else if (avx)
 		{
 
-			ExtractResource(SAVX, tbb, true);
+			ExtractResource(SAVX, tbb);
 		}
 		else
 		{
-			ExtractResource(SSSE2, tbb, true);
+			ExtractResource(SSSE2, tbb);
 		}
 	}
 	else if (precise)
 	{
 		if (avx2)
 		{
-			ExtractResource(PAVX2, tbb, true);
+			ExtractResource(PAVX2, tbb);
 		}
-		if (avx)
+		else if (avx)
 		{
 
-			ExtractResource(PAVX, tbb, true);
+			ExtractResource(PAVX, tbb);
 		}
 		else
 		{
-			ExtractResource(PSSE2, tbb, true);
+			ExtractResource(PSSE2, tbb);
 		}
 	}
 	else
 	{
 		if (avx2)
 		{
-			ExtractResource(AVX2, tbb, true);
+			ExtractResource(AVX2, tbb);
 		}
-		if (avx)
+		else if (avx)
 		{
 
-			ExtractResource(AVX, tbb, true);
+			ExtractResource(AVX, tbb);
 		}
 		else
 		{
-			ExtractResource(SSE2, tbb, true);
+			ExtractResource(SSE2, tbb);
 		}
 	}
 }
@@ -693,6 +708,7 @@ bool IsRunningInWine()
 	HMODULE ntdllMod = GetModuleHandle(L"ntdll.dll");
 	if (ntdllMod && GetProcAddress(ntdllMod, "wine_get_version"))
 		return true;
+
 	return false;
 }
 
@@ -735,7 +751,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			break;
 		}
 
-		if (StandardLoL())
+		if (LoL())
 		{
 			PCombine(Config, loldir, L"Config");
 			PCombine(tempo, loldir, L"Config");
@@ -743,7 +759,8 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			SetFileAttributes(Config, FILE_ATTRIBUTE_NORMAL);
 
-			if (std::wifstream(Config).good())
+			static std::wifstream file(Config);
+			if (file.good())
 			{
 				std::wstring strReplace = L"EnableParticleOptimizations=0";
 				std::wstring strNew = L"EnableParticleOptimizations=1";
@@ -766,13 +783,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 				CopyFile(tempo, Config, false);
 				DeleteFile(tempo);
-			}
 
-
-			static std::wifstream file(Config);
-			if (file.good())
-
-			{
 				std::wstring contents((std::istreambuf_iterator<wchar_t>(file)), std::istreambuf_iterator<wchar_t>());
 				std::wofstream out(Config, std::ios::app);
 				Myfile.open(Config);
@@ -786,17 +797,18 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				}
 
 				Myfile.close();
-
 			}
+
+
+			msvccopy(L"X2", L"X3");
 		}
 		else
 		{
-			ExtractResource(L"D3D", gdx[1], true);
+			ExtractResource(L"D3D", gdx[1]);
 			DeleteFile(gdx[0]);
 		}
 		
 
-		msvccopy(L"X2", L"X3");
 
 
 
@@ -824,15 +836,15 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			{
 				if (strict)
 				{
-					ExtractResource(L"S10", tbb, true);
+					ExtractResource(L"S10", tbb);
 				}
 				else if (precise)
 				{
-					ExtractResource(L"P10", tbb, true);
+					ExtractResource(L"P10", tbb);
 				}
 				else
 				{
-					ExtractResource(L"x13", tbb, true);
+					ExtractResource(L"x13", tbb);
 				}
 			}
 
@@ -840,15 +852,15 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			{
 				if (strict)
 				{
-					ExtractResource(L"XPS", tbb, true);
+					ExtractResource(L"XPS", tbb);
 				}
 				else if (precise)
 				{
-					ExtractResource(L"XPP", tbb, true);
+					ExtractResource(L"XPP", tbb);
 				}
 				else
 				{
-					ExtractResource(L"XP", tbb, true);
+					ExtractResource(L"XP", tbb);
 				}
 			}
 
@@ -865,9 +877,9 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			
 
-		ExtractResource(L"xa1", cgbuf[0], true);
-		ExtractResource(L"xa2", cgbuf[1], true);
-		ExtractResource(L"xa3", cgbuf[2], true);
+		ExtractResource(L"xa1", cgbuf[0]);
+		ExtractResource(L"xa2", cgbuf[1]);
+		ExtractResource(L"xa3", cgbuf[2]);
 
 		if (betaclient)
 		{
@@ -877,36 +889,36 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			*svc = '\0';
 			PCombine(svc, client[4], files[2]);
-			ExtractResource(L"CON", svc, true);
+			ExtractResource(L"CON", svc);
 
 			*svc = '\0';
 			PCombine(svc, client[4], files[3]);
-			ExtractResource(L"CON2", svc, true);
+			ExtractResource(L"CON2", svc);
 
 			*svc = '\0';
 			PCombine(svc, client[4], files[4]);
-			ExtractResource(L"CON3", svc, true);
+			ExtractResource(L"CON3", svc);
 
 			*svc = '\0';
 			PCombine(svc, client[4], files[5]);
-			ExtractResource(L"CON4", svc, true);
+			ExtractResource(L"CON4", svc);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[2]);
-			ExtractResource(L"CON", svc, true);
+			ExtractResource(L"CON", svc);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[3]);
-			ExtractResource(L"CON2", svc, true);
+			ExtractResource(L"CON2", svc);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[4]);
-			ExtractResource(L"CON3", svc, true);
+			ExtractResource(L"CON3", svc);
 
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[5]);
-			ExtractResource(L"CON4", svc, true);
+			ExtractResource(L"CON4", svc);
 		}
 
 		if (rclient)
@@ -914,14 +926,19 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[0]);
-			ExtractResource(L"x2", svc, true);
+			ExtractResource(L"x2", svc);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[1]);
-			ExtractResource(L"x3", svc, true);
+			ExtractResource(L"x3", svc);
 
-			ExtractResource(L"xAA", adobe[0], true);
-			ExtractResource(L"xBB", adobe[1], true);
+			ExtractResource(L"xAA", adobe[0]);
+			ExtractResource(L"xBB", adobe[1]);
+		}
+		else
+		{
+			ExtractResource(L"xAA", adobe[0]);
+			ExtractResource(L"xBB", adobe[1]);
 		}
 
 		if(directx)
@@ -929,90 +946,90 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			PCombine(temp, cwd, L"DirectXTemp");
 			CreateDirectory(temp, nullptr);
 
-			ExtractResource(L"DX0", temp + std::wstring(L"\\Apr2005_d3dx9_25_x86.cab"), true);
-			ExtractResource(L"DX1", temp + std::wstring(L"\\Apr2006_d3dx9_30_x86.cab"), true);
-			ExtractResource(L"DX2", temp + std::wstring(L"\\Apr2006_MDX1_x86.cab"), true);
-			ExtractResource(L"DX3", temp + std::wstring(L"\\Apr2006_MDX1_x86_Archive.cab"), true);
-			ExtractResource(L"DX4", temp + std::wstring(L"\\Apr2006_xinput_x86.cab"), true);
-			ExtractResource(L"DX5", temp + std::wstring(L"\\Apr2006_XACT_x86.cab"), true);
-			ExtractResource(L"DX6", temp + std::wstring(L"\\APR2007_d3dx9_33_x86.cab"), true);
-			ExtractResource(L"DX7", temp + std::wstring(L"\\APR2007_d3dx10_33_x86.cab"), true);
-			ExtractResource(L"DX8", temp + std::wstring(L"\\APR2007_XACT_x86.cab"), true);
-			ExtractResource(L"DX9", temp + std::wstring(L"\\Aug2005_d3dx9_27_x86.cab"), true);
-			ExtractResource(L"DX10", temp + std::wstring(L"\\AUG2006_XACT_x86.cab"), true);
-			ExtractResource(L"DX11", temp + std::wstring(L"\\APR2007_xinput_x86.cab"), true);
-			ExtractResource(L"DX12", temp + std::wstring(L"\\AUG2007_d3dx9_35_x86.cab"), true);
-			ExtractResource(L"DX13", temp + std::wstring(L"\\AUG2006_xinput_x86.cab"), true);
-			ExtractResource(L"DX14", temp + std::wstring(L"\\AUG2007_d3dx10_35_x86.cab"), true);
-			ExtractResource(L"DX15", temp + std::wstring(L"\\AUG2007_XACT_x86.cab"), true);
-			ExtractResource(L"DX16", temp + std::wstring(L"\\Aug2008_d3dx9_39_x86.cab"), true);
-			ExtractResource(L"DX17", temp + std::wstring(L"\\Aug2008_d3dx10_39_x86.cab"), true);
-			ExtractResource(L"DX18", temp + std::wstring(L"\\Aug2008_XACT_x86.cab"), true);
-			ExtractResource(L"DX19", temp + std::wstring(L"\\Aug2008_XAudio_x86.cab"), true);
-			ExtractResource(L"DX20", temp + std::wstring(L"\\Aug2009_D3DCompiler_42_x86.cab"), true);
-			ExtractResource(L"DX21", temp + std::wstring(L"\\Aug2009_d3dcsx_42_x86.cab"), true);
-			ExtractResource(L"DX22", temp + std::wstring(L"\\Aug2009_d3dx9_42_x86.cab"), true);
-			ExtractResource(L"DX23", temp + std::wstring(L"\\Aug2009_d3dx10_42_x86.cab"), true);
-			ExtractResource(L"DX24", temp + std::wstring(L"\\Aug2009_d3dx11_42_x86.cab"), true);
-			ExtractResource(L"DX25", temp + std::wstring(L"\\Aug2009_XACT_x86.cab"), true);
-			ExtractResource(L"DX26", temp + std::wstring(L"\\Aug2009_XAudio_x86.cab"), true);
-			ExtractResource(L"DX27", temp + std::wstring(L"\\Dec2005_d3dx9_28_x86.cab"), true);
-			ExtractResource(L"DX28", temp + std::wstring(L"\\DEC2006_d3dx9_32_x86.cab"), true);
-			ExtractResource(L"DX29", temp + std::wstring(L"\\DEC2006_d3dx10_00_x86.cab"), true);
-			ExtractResource(L"DX30", temp + std::wstring(L"\\DEC2006_XACT_x86.cab"), true);
+			ExtractResource(L"DX0", temp + std::wstring(L"\\Apr2005_d3dx9_25_x86.cab"));
+			ExtractResource(L"DX1", temp + std::wstring(L"\\Apr2006_d3dx9_30_x86.cab"));
+			ExtractResource(L"DX2", temp + std::wstring(L"\\Apr2006_MDX1_x86.cab"));
+			ExtractResource(L"DX3", temp + std::wstring(L"\\Apr2006_MDX1_x86_Archive.cab"));
+			ExtractResource(L"DX4", temp + std::wstring(L"\\Apr2006_xinput_x86.cab"));
+			ExtractResource(L"DX5", temp + std::wstring(L"\\Apr2006_XACT_x86.cab"));
+			ExtractResource(L"DX6", temp + std::wstring(L"\\APR2007_d3dx9_33_x86.cab"));
+			ExtractResource(L"DX7", temp + std::wstring(L"\\APR2007_d3dx10_33_x86.cab"));
+			ExtractResource(L"DX8", temp + std::wstring(L"\\APR2007_XACT_x86.cab"));
+			ExtractResource(L"DX9", temp + std::wstring(L"\\Aug2005_d3dx9_27_x86.cab"));
+			ExtractResource(L"DX10", temp + std::wstring(L"\\AUG2006_XACT_x86.cab"));
+			ExtractResource(L"DX11", temp + std::wstring(L"\\APR2007_xinput_x86.cab"));
+			ExtractResource(L"DX12", temp + std::wstring(L"\\AUG2007_d3dx9_35_x86.cab"));
+			ExtractResource(L"DX13", temp + std::wstring(L"\\AUG2006_xinput_x86.cab"));
+			ExtractResource(L"DX14", temp + std::wstring(L"\\AUG2007_d3dx10_35_x86.cab"));
+			ExtractResource(L"DX15", temp + std::wstring(L"\\AUG2007_XACT_x86.cab"));
+			ExtractResource(L"DX16", temp + std::wstring(L"\\Aug2008_d3dx9_39_x86.cab"));
+			ExtractResource(L"DX17", temp + std::wstring(L"\\Aug2008_d3dx10_39_x86.cab"));
+			ExtractResource(L"DX18", temp + std::wstring(L"\\Aug2008_XACT_x86.cab"));
+			ExtractResource(L"DX19", temp + std::wstring(L"\\Aug2008_XAudio_x86.cab"));
+			ExtractResource(L"DX20", temp + std::wstring(L"\\Aug2009_D3DCompiler_42_x86.cab"));
+			ExtractResource(L"DX21", temp + std::wstring(L"\\Aug2009_d3dcsx_42_x86.cab"));
+			ExtractResource(L"DX22", temp + std::wstring(L"\\Aug2009_d3dx9_42_x86.cab"));
+			ExtractResource(L"DX23", temp + std::wstring(L"\\Aug2009_d3dx10_42_x86.cab"));
+			ExtractResource(L"DX24", temp + std::wstring(L"\\Aug2009_d3dx11_42_x86.cab"));
+			ExtractResource(L"DX25", temp + std::wstring(L"\\Aug2009_XACT_x86.cab"));
+			ExtractResource(L"DX26", temp + std::wstring(L"\\Aug2009_XAudio_x86.cab"));
+			ExtractResource(L"DX27", temp + std::wstring(L"\\Dec2005_d3dx9_28_x86.cab"));
+			ExtractResource(L"DX28", temp + std::wstring(L"\\DEC2006_d3dx9_32_x86.cab"));
+			ExtractResource(L"DX29", temp + std::wstring(L"\\DEC2006_d3dx10_00_x86.cab"));
+			ExtractResource(L"DX30", temp + std::wstring(L"\\DEC2006_XACT_x86.cab"));
 
-			ExtractResource(L"DX31", temp + std::wstring(L"\\DSETUP.dll"), true);
-			ExtractResource(L"DX32", temp + std::wstring(L"\\dsetup32.dll"), true);
-			ExtractResource(L"DX33", temp + std::wstring(L"\\dxdllreg_x86.cab"), true);
-			ExtractResource(L"DX34", temp + std::wstring(L"\\DXSETUP.exe"), true);
-			ExtractResource(L"DX35", temp + std::wstring(L"\\dxupdate.cab"), true);
+			ExtractResource(L"DX31", temp + std::wstring(L"\\DSETUP.dll"));
+			ExtractResource(L"DX32", temp + std::wstring(L"\\dsetup32.dll"));
+			ExtractResource(L"DX33", temp + std::wstring(L"\\dxdllreg_x86.cab"));
+			ExtractResource(L"DX34", temp + std::wstring(L"\\DXSETUP.exe"));
+			ExtractResource(L"DX35", temp + std::wstring(L"\\dxupdate.cab"));
 
-			ExtractResource(L"DX36", temp + std::wstring(L"\\Feb2005_d3dx9_24_x86.cab"), true);
-			ExtractResource(L"DX37", temp + std::wstring(L"\\Feb2006_d3dx9_29_x86.cab"), true);
-			ExtractResource(L"DX38", temp + std::wstring(L"\\Feb2006_XACT_x86.cab"), true);
-			ExtractResource(L"DX39", temp + std::wstring(L"\\FEB2007_XACT_x86.cab"), true);
-			ExtractResource(L"DX40", temp + std::wstring(L"\\Feb2010_X3DAudio_x86.cab"), true);
-			ExtractResource(L"DX41", temp + std::wstring(L"\\Feb2010_XACT_x86.cab"), true);
-			ExtractResource(L"DX42", temp + std::wstring(L"\\Feb2010_XAudio_x86.cab"), true);
-			ExtractResource(L"DX43", temp + std::wstring(L"\\Jun2005_d3dx9_26_x86.cab"), true);
-			ExtractResource(L"DX44", temp + std::wstring(L"\\JUN2006_XACT_x86.cab"), true);
-			ExtractResource(L"DX45", temp + std::wstring(L"\\JUN2007_d3dx9_34_x86.cab"), true);
-			ExtractResource(L"DX46", temp + std::wstring(L"\\JUN2007_d3dx10_34_x86.cab"), true);
-			ExtractResource(L"DX47", temp + std::wstring(L"\\Jun2010_d3dcsx_43_x86.cab"), true);
-			ExtractResource(L"DX48", temp + std::wstring(L"\\JUN2007_XACT_x86.cab"), true);
-			ExtractResource(L"DX49", temp + std::wstring(L"\\JUN2008_d3dx9_38_x86.cab"), true);
-			ExtractResource(L"DX50", temp + std::wstring(L"\\JUN2008_d3dx10_38_x86.cab"), true);
-			ExtractResource(L"DX51", temp + std::wstring(L"\\JUN2008_X3DAudio_x86.cab"), true);
-			ExtractResource(L"DX52", temp + std::wstring(L"\\JUN2008_XACT_x86.cab"), true);
-			ExtractResource(L"DX53", temp + std::wstring(L"\\JUN2008_XAudio_x86.cab"), true);
-			ExtractResource(L"DX54", temp + std::wstring(L"\\Jun2010_D3DCompiler_43_x86.cab"), true);
-			ExtractResource(L"DX55", temp + std::wstring(L"\\Jun2010_XACT_x86.cab"), true);
-			ExtractResource(L"DX56", temp + std::wstring(L"\\Jun2010_d3dx9_43_x86.cab"), true);
-			ExtractResource(L"DX57", temp + std::wstring(L"\\Jun2010_d3dx11_43_x86.cab"), true);
-			ExtractResource(L"DX58", temp + std::wstring(L"\\Jun2010_d3dx10_43_x86.cab"), true);
-			ExtractResource(L"DX59", temp + std::wstring(L"\\Mar2008_d3dx9_37_x86.cab"), true);
-			ExtractResource(L"DX60", temp + std::wstring(L"\\Jun2010_XAudio_x86.cab"), true);
-			ExtractResource(L"DX61", temp + std::wstring(L"\\Mar2008_d3dx10_37_x86.cab"), true);
-			ExtractResource(L"DX62", temp + std::wstring(L"\\Mar2008_X3DAudio_x86.cab"), true);
-			ExtractResource(L"DX63", temp + std::wstring(L"\\Mar2008_XAudio_x86.cab"), true);
-			ExtractResource(L"DX64", temp + std::wstring(L"\\Mar2008_XACT_x86.cab"), true);
-			ExtractResource(L"DX65", temp + std::wstring(L"\\Mar2009_d3dx9_41_x86.cab"), true);
-			ExtractResource(L"DX66", temp + std::wstring(L"\\Mar2009_d3dx10_41_x86.cab"), true);
-			ExtractResource(L"DX67", temp + std::wstring(L"\\Mar2009_X3DAudio_x86.cab"), true);
-			ExtractResource(L"DX68", temp + std::wstring(L"\\Mar2009_XACT_x86.cab"), true);
-			ExtractResource(L"DX69", temp + std::wstring(L"\\Mar2009_XAudio_x86.cab"), true);
-			ExtractResource(L"DX70", temp + std::wstring(L"\\Nov2007_d3dx9_36_x86.cab"), true);
-			ExtractResource(L"DX71", temp + std::wstring(L"\\Nov2007_d3dx10_36_x86.cab"), true);
-			ExtractResource(L"DX72", temp + std::wstring(L"\\NOV2007_X3DAudio_x86.cab"), true);
-			ExtractResource(L"DX73", temp + std::wstring(L"\\NOV2007_XACT_x86.cab"), true);
-			ExtractResource(L"DX74", temp + std::wstring(L"\\Nov2008_d3dx9_40_x86.cab"), true);
-			ExtractResource(L"DX75", temp + std::wstring(L"\\Nov2008_d3dx10_40_x86.cab"), true);
-			ExtractResource(L"DX76", temp + std::wstring(L"\\Nov2008_X3DAudio_x86.cab"), true);
-			ExtractResource(L"DX77", temp + std::wstring(L"\\Nov2008_XACT_x86.cab"), true);
-			ExtractResource(L"DX78", temp + std::wstring(L"\\Nov2008_XAudio_x86.cab"), true);
-			ExtractResource(L"DX79", temp + std::wstring(L"\\Oct2005_xinput_x86.cab"), true);
-			ExtractResource(L"DX80", temp + std::wstring(L"\\OCT2006_d3dx9_31_x86.cab"), true);
-			ExtractResource(L"DX81", temp + std::wstring(L"\\OCT2006_XACT_x86.cab"), true);
+			ExtractResource(L"DX36", temp + std::wstring(L"\\Feb2005_d3dx9_24_x86.cab"));
+			ExtractResource(L"DX37", temp + std::wstring(L"\\Feb2006_d3dx9_29_x86.cab"));
+			ExtractResource(L"DX38", temp + std::wstring(L"\\Feb2006_XACT_x86.cab"));
+			ExtractResource(L"DX39", temp + std::wstring(L"\\FEB2007_XACT_x86.cab"));
+			ExtractResource(L"DX40", temp + std::wstring(L"\\Feb2010_X3DAudio_x86.cab"));
+			ExtractResource(L"DX41", temp + std::wstring(L"\\Feb2010_XACT_x86.cab"));
+			ExtractResource(L"DX42", temp + std::wstring(L"\\Feb2010_XAudio_x86.cab"));
+			ExtractResource(L"DX43", temp + std::wstring(L"\\Jun2005_d3dx9_26_x86.cab"));
+			ExtractResource(L"DX44", temp + std::wstring(L"\\JUN2006_XACT_x86.cab"));
+			ExtractResource(L"DX45", temp + std::wstring(L"\\JUN2007_d3dx9_34_x86.cab"));
+			ExtractResource(L"DX46", temp + std::wstring(L"\\JUN2007_d3dx10_34_x86.cab"));
+			ExtractResource(L"DX47", temp + std::wstring(L"\\Jun2010_d3dcsx_43_x86.cab"));
+			ExtractResource(L"DX48", temp + std::wstring(L"\\JUN2007_XACT_x86.cab"));
+			ExtractResource(L"DX49", temp + std::wstring(L"\\JUN2008_d3dx9_38_x86.cab"));
+			ExtractResource(L"DX50", temp + std::wstring(L"\\JUN2008_d3dx10_38_x86.cab"));
+			ExtractResource(L"DX51", temp + std::wstring(L"\\JUN2008_X3DAudio_x86.cab"));
+			ExtractResource(L"DX52", temp + std::wstring(L"\\JUN2008_XACT_x86.cab"));
+			ExtractResource(L"DX53", temp + std::wstring(L"\\JUN2008_XAudio_x86.cab"));
+			ExtractResource(L"DX54", temp + std::wstring(L"\\Jun2010_D3DCompiler_43_x86.cab"));
+			ExtractResource(L"DX55", temp + std::wstring(L"\\Jun2010_XACT_x86.cab"));
+			ExtractResource(L"DX56", temp + std::wstring(L"\\Jun2010_d3dx9_43_x86.cab"));
+			ExtractResource(L"DX57", temp + std::wstring(L"\\Jun2010_d3dx11_43_x86.cab"));
+			ExtractResource(L"DX58", temp + std::wstring(L"\\Jun2010_d3dx10_43_x86.cab"));
+			ExtractResource(L"DX59", temp + std::wstring(L"\\Mar2008_d3dx9_37_x86.cab"));
+			ExtractResource(L"DX60", temp + std::wstring(L"\\Jun2010_XAudio_x86.cab"));
+			ExtractResource(L"DX61", temp + std::wstring(L"\\Mar2008_d3dx10_37_x86.cab"));
+			ExtractResource(L"DX62", temp + std::wstring(L"\\Mar2008_X3DAudio_x86.cab"));
+			ExtractResource(L"DX63", temp + std::wstring(L"\\Mar2008_XAudio_x86.cab"));
+			ExtractResource(L"DX64", temp + std::wstring(L"\\Mar2008_XACT_x86.cab"));
+			ExtractResource(L"DX65", temp + std::wstring(L"\\Mar2009_d3dx9_41_x86.cab"));
+			ExtractResource(L"DX66", temp + std::wstring(L"\\Mar2009_d3dx10_41_x86.cab"));
+			ExtractResource(L"DX67", temp + std::wstring(L"\\Mar2009_X3DAudio_x86.cab"));
+			ExtractResource(L"DX68", temp + std::wstring(L"\\Mar2009_XACT_x86.cab"));
+			ExtractResource(L"DX69", temp + std::wstring(L"\\Mar2009_XAudio_x86.cab"));
+			ExtractResource(L"DX70", temp + std::wstring(L"\\Nov2007_d3dx9_36_x86.cab"));
+			ExtractResource(L"DX71", temp + std::wstring(L"\\Nov2007_d3dx10_36_x86.cab"));
+			ExtractResource(L"DX72", temp + std::wstring(L"\\NOV2007_X3DAudio_x86.cab"));
+			ExtractResource(L"DX73", temp + std::wstring(L"\\NOV2007_XACT_x86.cab"));
+			ExtractResource(L"DX74", temp + std::wstring(L"\\Nov2008_d3dx9_40_x86.cab"));
+			ExtractResource(L"DX75", temp + std::wstring(L"\\Nov2008_d3dx10_40_x86.cab"));
+			ExtractResource(L"DX76", temp + std::wstring(L"\\Nov2008_X3DAudio_x86.cab"));
+			ExtractResource(L"DX77", temp + std::wstring(L"\\Nov2008_XACT_x86.cab"));
+			ExtractResource(L"DX78", temp + std::wstring(L"\\Nov2008_XAudio_x86.cab"));
+			ExtractResource(L"DX79", temp + std::wstring(L"\\Oct2005_xinput_x86.cab"));
+			ExtractResource(L"DX80", temp + std::wstring(L"\\OCT2006_d3dx9_31_x86.cab"));
+			ExtractResource(L"DX81", temp + std::wstring(L"\\OCT2006_XACT_x86.cab"));
 
 			ei.cbSize = sizeof(SHELLEXECUTEINFO);
 			ei.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -1105,7 +1122,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			exit(0);
 		}
-		else if (rclient & StandardLoL())
+		else if (rclient & LoL())
 		{
 
 			ei = {};
@@ -1149,22 +1166,22 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 		if (rclient)
 		{
-			ExtractResource(L"x101", adobe[0], true);
-			ExtractResource(L"x701", adobe[1], true);
+			ExtractResource(L"x101", adobe[0]);
+			ExtractResource(L"x701", adobe[1]);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[0]);
-			ExtractResource(L"x501", svc, true);
+			ExtractResource(L"x501", svc);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[1]);
-			ExtractResource(L"x601", svc, true);
+			ExtractResource(L"x601", svc);
 		}
 
-		ExtractResource(L"xu1", cgbuf[0], true);
-		ExtractResource(L"xu2", cgbuf[1], true);
-		ExtractResource(L"xu3", cgbuf[2], true);
-		ExtractResource(L"xu4", tbb, true);
+		ExtractResource(L"xu1", cgbuf[0]);
+		ExtractResource(L"xu2", cgbuf[1]);
+		ExtractResource(L"xu3", cgbuf[2]);
+		ExtractResource(L"xu4", tbb);
 
 
 		PCombine(buff[0], client[2], L"d3d9.dll");
@@ -1191,42 +1208,39 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			*svc = '\0';
 			PCombine(svc, client[4], files[2]);
-			ExtractResource(L"CONx", svc, true);
+			ExtractResource(L"CONx", svc);
 			*svc = '\0';
 			PCombine(svc, client[4], files[3]);
-			ExtractResource(L"CONx2", svc, true);
+			ExtractResource(L"CONx2", svc);
 
 			*svc = '\0';
 			PCombine(svc, client[4], files[4]);
-			ExtractResource(L"CONx3", svc, true);
+			ExtractResource(L"CONx3", svc);
 
 			*svc = '\0';
 			PCombine(svc, client[4], files[5]);
-			ExtractResource(L"XU6", svc, true);
+			ExtractResource(L"XU6", svc);
 
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[2]);
-			ExtractResource(L"CONx", svc, true);
+			ExtractResource(L"CONx", svc);
 			*svc = '\0';
 			PCombine(svc, loldir, files[3]);
-			ExtractResource(L"CONx2", svc, true);
+			ExtractResource(L"CONx2", svc);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[4]);
-			ExtractResource(L"CONx3", svc, true);
+			ExtractResource(L"CONx3", svc);
 
 			*svc = '\0';
 			PCombine(svc, loldir, files[5]);
-			ExtractResource(L"XU6", svc, true);
+			ExtractResource(L"XU6", svc);
 		}
 
-		if (std::wifstream(instdir[1]).good())
+		if (!LoL())
 		{
-
-
-
-			ExtractResource(L"xu5", gdx[0], true);
+			ExtractResource(L"xu5", gdx[0]);
 			DeleteFile(gdx[1]);
 		}
 
@@ -1266,8 +1280,8 @@ LRESULT CALLBACK ButtonProc3(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		Msg = {};
 	
 
-		ExtractResource(L"RES1", Reshade[0], false);
-		ExtractResource(L"RES0", Reshade[1], true);
+		ExtractResource(L"RES1", Reshade[0]);
+		ExtractResource(L"RES0", Reshade[1]);
 
 		ShellExecute(nullptr, nullptr, Reshade[0], nullptr, nullptr, SW_SHOW);
 
@@ -1301,30 +1315,30 @@ LRESULT CALLBACK ButtonProc4(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		
 		SendMessage(hwndButton4, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(L"Installing..."));
 		CheckAndKill(L"ENBInjector.exe");
-		ExtractResource(L"ENB0", enb[0], false);
-		ExtractResource(L"ENB1", enb[1], false);
-		ExtractResource(L"ENB2", enb[2], true);
-		ExtractResource(L"ENB3", enb[3], false);
-		ExtractResource(L"ENB4", enb[4], false);
-		ExtractResource(L"ENB6", enb[5], true);
-		ExtractResource(L"ENB7", enb[6], false);
-		ExtractResource(L"ENB8", enb[7], false);
-		ExtractResource(L"ENB9", enb[8], false);
-		ExtractResource(L"ENB10", enb[9], false);
-		ExtractResource(L"ENB5", enb[10], false);
+		ExtractResource(L"ENB0", enb[0]);
+		ExtractResource(L"ENB1", enb[1]);
+		ExtractResource(L"ENB2", enb[2]);
+		ExtractResource(L"ENB3", enb[3]);
+		ExtractResource(L"ENB4", enb[4]);
+		ExtractResource(L"ENB6", enb[5]);
+		ExtractResource(L"ENB7", enb[6]);
+		ExtractResource(L"ENB8", enb[7]);
+		ExtractResource(L"ENB9", enb[8]);
+		ExtractResource(L"ENB10", enb[9]);
+		ExtractResource(L"ENB5", enb[10]);
 		CreateDirectory(enb[11], nullptr);
 		CreateDirectory(enb[12], nullptr);
 		CreateDirectory(enb[13], nullptr);
 		CreateDirectory(enb[14], nullptr);
 		CreateDirectory(enb[15], nullptr);
-		ExtractResource(L"ENB11", enb[15] + std::wstring(L"\\psh2DF967C6.txt"), false);
-		ExtractResource(L"ENB12", enb[15] + std::wstring(L"\\psh8DB4CDB2.txt"), false);
-		ExtractResource(L"ENB13", enb[15] + std::wstring(L"\\psh323E9BB8.txt"), false);
-		ExtractResource(L"ENB14", enb[15] + std::wstring(L"\\pshF5256B40.txt"), false);
-		ExtractResource(L"ENB18", enb[11] + std::wstring(L"\\enbeffect.fx"), false);
-		ExtractResource(L"ENB17", enb[12] + std::wstring(L"\\enbeffect.fx"), false);
-		ExtractResource(L"ENB16", enb[13] + std::wstring(L"\\enbeffect.fx"), false);
-		ExtractResource(L"ENB15", enb[14] + std::wstring(L"\\enbeffect.fx"), false);
+		ExtractResource(L"ENB11", enb[15] + std::wstring(L"\\psh2DF967C6.txt"));
+		ExtractResource(L"ENB12", enb[15] + std::wstring(L"\\psh8DB4CDB2.txt"));
+		ExtractResource(L"ENB13", enb[15] + std::wstring(L"\\psh323E9BB8.txt"));
+		ExtractResource(L"ENB14", enb[15] + std::wstring(L"\\pshF5256B40.txt"));
+		ExtractResource(L"ENB18", enb[11] + std::wstring(L"\\enbeffect.fx"));
+		ExtractResource(L"ENB17", enb[12] + std::wstring(L"\\enbeffect.fx"));
+		ExtractResource(L"ENB16", enb[13] + std::wstring(L"\\enbeffect.fx"));
+		ExtractResource(L"ENB15", enb[14] + std::wstring(L"\\enbeffect.fx"));
 
 		ei.cbSize = sizeof(SHELLEXECUTEINFO);
 		ei.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -1352,7 +1366,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		hDC = BeginPaint(hwnd, &ps);
 		SetTextColor(hDC, RGB(0, 0, 0));
 		SetBkMode(hDC, TRANSPARENT);
-		if (StandardLoL())
+		if (LoL())
 		{
 			DrawText(hDC, L"Erase all LoL-Logs (FPS+)", -1, &localLabel, DT_CENTER | DT_NOCLIP);
 		}
@@ -1490,9 +1504,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			outputFile.close();
 		}
 		PCombine(instdir[0], loldir, L"lol.launcher.exe");
-		PCombine(instdir[1], loldir, L"lol.launcher_tencent.exe");
+
+		PCombine(instdir[1], loldir, L"TCLS");
+		PAppend(instdir[1], L"Client.exe");
+
+		PCombine(instdir[6], loldir, L"lol.launcher_tencent.exe");
+
+
+
 		PCombine(instdir[2], loldir, L"lol.exe");
+
 		PCombine(instdir[5], loldir, L"lolex.exe");
+
+
 		PCombine(instdir[3], loldir, L"lol.launcher.admin.exe");
 		PCombine(instdir[4], loldir, L"LeagueClient.exe");
 
@@ -1501,7 +1525,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		CreateWindowEx(NULL, L"button", L"directx", WS_VISIBLE | WS_CHILD | BS_CHECKBOX, 15, 80, 15, 15, hwnd, reinterpret_cast<HMENU>(CHECKBOX2), (reinterpret_cast<LPCREATESTRUCT>(lp))->hInstance, NULL);
 
 
-		if (StandardLoL())
+		if (LoL())
 		{
 			CreateWindowEx(NULL, L"button", L"Delete Logs", WS_VISIBLE | WS_CHILD | BS_CHECKBOX, 15, 0, 15, 15, hwnd, reinterpret_cast<HMENU>(CHECKBOX1), (reinterpret_cast<LPCREATESTRUCT>(lp))->hInstance, NULL);
 		}
@@ -1659,7 +1683,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 
 
 
-	if (StandardLoL())
+	if (LoL())
 	{
 		PCombine(client[0], loldir, rads.c_str());
 		PAppend(client[0], proj.c_str());
@@ -1724,7 +1748,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 	{
 		PCombine(client[2], loldir, L"Game");
 		PCombine(client[0], loldir, L"Air");
-		rclient = true;
 
 		PCombine(client[3], client[0], adobef);
 		PAppend(client[3], L"Versions");
