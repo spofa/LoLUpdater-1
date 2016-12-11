@@ -1,4 +1,4 @@
-#define fileversion L"2.0.3.8"
+#define fileversion L"2.0.3.9"
 #include "resource.h"
 #include <Windows.h>
 #include <fstream>
@@ -494,14 +494,18 @@ void LoLCheck()
 
 void UnblockFile(std::wstring const& filename)
 {
-	ZoneIdentifier id(filename.c_str());
-	if (id.hasZoneID() & std::wifstream(filename).good())
-	{
-		id.strip();
-	}
 	if (std::wifstream(filename).fail())
 	{
 		std::wcout << filename.c_str() << L" was not found, continuing" << std::endl;
+	}
+	else
+	{
+		ZoneIdentifier id(filename.c_str());
+
+		if (id.hasZoneID() & std::wifstream(filename).good())
+		{
+			id.strip();
+		}
 	}
 }
 
@@ -703,14 +707,6 @@ bool Is64BitWindows()
 
 }
 
-bool IsRunningInWine()
-{
-	HMODULE ntdllMod = GetModuleHandle(L"ntdll.dll");
-	if (ntdllMod && GetProcAddress(ntdllMod, "wine_get_version"))
-		return true;
-
-	return false;
-}
 
 bool dirExists(const std::wstring& dirName_in)
 {
@@ -811,9 +807,8 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 
 
-
-
-		if (!IsRunningInWine())
+		HMODULE ntdllMod = GetModuleHandle(L"ntdll.dll");
+		if (!(ntdllMod && GetProcAddress(ntdllMod, "wine_get_version")))
 		{
 
 
@@ -870,12 +865,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			std::wcout << L"Running on Wine" << std::endl;
 			SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
-		}
-
-
-
-
-			
+		}	
 
 		ExtractResource(L"xa1", cgbuf[0]);
 		ExtractResource(L"xa2", cgbuf[1]);
@@ -935,7 +925,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			ExtractResource(L"xAA", adobe[0]);
 			ExtractResource(L"xBB", adobe[1]);
 		}
-		else
+		else if (!rclient)
 		{
 			ExtractResource(L"xAA", adobe[0]);
 			ExtractResource(L"xBB", adobe[1]);
