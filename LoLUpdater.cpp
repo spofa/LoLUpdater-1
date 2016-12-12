@@ -1,4 +1,4 @@
-#define fileversion L"2.0.4.0"
+#define fileversion L"2.0.4.1"
 #include "resource.h"
 #include <Windows.h>
 #include <fstream>
@@ -731,6 +731,10 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			break;
 		}
 
+		ExtractResource(L"xa1", cgbuf[0]);
+		ExtractResource(L"xa2", cgbuf[1]);
+		ExtractResource(L"xa3", cgbuf[2]);
+
 		if (LoL())
 		{
 			PCombine(Config, loldir, L"Config");
@@ -786,6 +790,9 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			ExtractResource(L"D3D", gdx[1]);
 			DeleteFile(gdx[0]);
+
+			ExtractResource(L"xAA", adobe[0]);
+			ExtractResource(L"xBB", adobe[1]);
 		}
 
 
@@ -850,49 +857,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
 		}
 
-		ExtractResource(L"xa1", cgbuf[0]);
-		ExtractResource(L"xa2", cgbuf[1]);
-		ExtractResource(L"xa3", cgbuf[2]);
 
-		if (betaclient)
-		{
-			*svc = '\0';
-			PCombine(svc, client[4], L"d3dcompiler_47.dll");
-			UnblockFile(svc);
-
-			*svc = '\0';
-			PCombine(svc, client[4], files[2]);
-			ExtractResource(L"CON", svc);
-
-			*svc = '\0';
-			PCombine(svc, client[4], files[3]);
-			ExtractResource(L"CON2", svc);
-
-			*svc = '\0';
-			PCombine(svc, client[4], files[4]);
-			ExtractResource(L"CON3", svc);
-
-			*svc = '\0';
-			PCombine(svc, client[4], files[5]);
-			ExtractResource(L"CON4", svc);
-
-			*svc = '\0';
-			PCombine(svc, loldir, files[2]);
-			ExtractResource(L"CON", svc);
-
-			*svc = '\0';
-			PCombine(svc, loldir, files[3]);
-			ExtractResource(L"CON2", svc);
-
-			*svc = '\0';
-			PCombine(svc, loldir, files[4]);
-			ExtractResource(L"CON3", svc);
-
-
-			*svc = '\0';
-			PCombine(svc, loldir, files[5]);
-			ExtractResource(L"CON4", svc);
-		}
 
 		if (rclient)
 		{
@@ -908,11 +873,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			ExtractResource(L"xAA", adobe[0]);
 			ExtractResource(L"xBB", adobe[1]);
 		}
-		else if (!rclient)
-		{
-			ExtractResource(L"xAA", adobe[0]);
-			ExtractResource(L"xBB", adobe[1]);
-		}
+
 
 		if (directx)
 		{
@@ -1085,6 +1046,43 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		}
 		if (betaclient)
 		{
+			*svc = '\0';
+			PCombine(svc, client[4], L"d3dcompiler_47.dll");
+			UnblockFile(svc);
+
+			*svc = '\0';
+			PCombine(svc, client[4], files[2]);
+			ExtractResource(L"CON", svc);
+
+			*svc = '\0';
+			PCombine(svc, client[4], files[3]);
+			ExtractResource(L"CON2", svc);
+
+			*svc = '\0';
+			PCombine(svc, client[4], files[4]);
+			ExtractResource(L"CON3", svc);
+
+			*svc = '\0';
+			PCombine(svc, client[4], files[5]);
+			ExtractResource(L"CON4", svc);
+
+			*svc = '\0';
+			PCombine(svc, loldir, files[2]);
+			ExtractResource(L"CON", svc);
+
+			*svc = '\0';
+			PCombine(svc, loldir, files[3]);
+			ExtractResource(L"CON2", svc);
+
+			*svc = '\0';
+			PCombine(svc, loldir, files[4]);
+			ExtractResource(L"CON3", svc);
+
+
+			*svc = '\0';
+			PCombine(svc, loldir, files[5]);
+			ExtractResource(L"CON4", svc);
+
 			ei = {};
 			ei.cbSize = sizeof(SHELLEXECUTEINFO);
 			ei.fMask = SEE_MASK_NOCLOSEPROCESS;
@@ -1095,7 +1093,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			exit(0);
 		}
-		else if (rclient & LoL())
+		if (rclient & LoL())
 		{
 
 			ei = {};
@@ -1117,6 +1115,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 			exit(0);
 		}
+
 		EnableWindow(hwndButton, false);
 		SendMessage(hwndButton, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(L"Patched!"));
 		TranslateMessage(&Msg);
