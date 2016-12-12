@@ -1,4 +1,4 @@
-#define fileversion L"2.0.3.9"
+#define fileversion L"2.0.4.0"
 #include "resource.h"
 #include <Windows.h>
 #include <fstream>
@@ -602,23 +602,8 @@ int instrset_detect(void) {
 	__cpuid(abcd, 0);                                        // call cpuid function 0
 	if (abcd[0] == 0) return iset;                         // no further cpuid function supported
 	__cpuid(abcd, 1);                                        // call cpuid function 1 for feature flags
-	if ((abcd[3] & (1 << 0)) == 0) return iset;           // no floating point
-	if ((abcd[3] & (1 << 23)) == 0) return iset;           // no MMX
-	if ((abcd[3] & (1 << 15)) == 0) return iset;           // no conditional move
-	if ((abcd[3] & (1 << 24)) == 0) return iset;           // no FXSAVE
-	if ((abcd[3] & (1 << 25)) == 0) return iset;           // no SSE
-	iset = 1;                                              // 1: SSE supported
-	if ((abcd[3] & (1 << 26)) == 0) return iset;           // no SSE2
-	iset = 2;                                              // 2: SSE2 supported
-	if ((abcd[2] & (1 << 0)) == 0) return iset;           // no SSE3
-	iset = 3;                                              // 3: SSE3 supported
-	if ((abcd[2] & (1 << 9)) == 0) return iset;           // no SSSE3
-	iset = 4;                                              // 4: SSSE3 supported
-	if ((abcd[2] & (1 << 19)) == 0) return iset;           // no SSE4.1
-	iset = 5;                                              // 5: SSE4.1 supported
-	if ((abcd[2] & (1 << 23)) == 0) return iset;           // no POPCNT
-	if ((abcd[2] & (1 << 20)) == 0) return iset;           // no SSE4.2
-	iset = 6;                                              // 6: SSE4.2 supported
+
+
 	if ((abcd[2] & (1 << 27)) == 0) return iset;           // no OSXSAVE
 	if ((_xgetbv(0) & 6) != 6)       return iset;           // AVX not enabled in O.S.
 	if ((abcd[2] & (1 << 28)) == 0) return iset;           // no AVX
@@ -631,59 +616,59 @@ int instrset_detect(void) {
 
 void SIMDCheck(std::wstring const& AVX2, std::wstring const& AVX, std::wstring const& SSE2, std::wstring const& SAVX2, std::wstring const& SAVX, std::wstring const& SSSE2, std::wstring const& PAVX2, std::wstring const& PAVX, std::wstring const& PSSE2)
 {
+	avx2 = (instrset_detect() >= 8);
+	avx = (instrset_detect() >= 7);
 
-	avx = instrset_detect() >= 7;
-	avx2 = instrset_detect() >= 8;
-
-
+	
 	if (strict)
 	{
 		if (avx2)
 		{
 			ExtractResource(SAVX2, tbb);
 		}
-		else if (avx)
+		if (avx & !avx2)
 		{
 
 			ExtractResource(SAVX, tbb);
 		}
-		else
+		if(!avx & !avx2)
 		{
 			ExtractResource(SSSE2, tbb);
 		}
 	}
-	else if (precise)
+	if (precise)
 	{
 		if (avx2)
 		{
 			ExtractResource(PAVX2, tbb);
 		}
-		else if (avx)
+		if (avx & !avx2)
 		{
 
 			ExtractResource(PAVX, tbb);
 		}
-		else
+		if (!avx & !avx2)
 		{
 			ExtractResource(PSSE2, tbb);
 		}
 	}
-	else
+	if(!strict & !precise)
 	{
 		if (avx2)
 		{
 			ExtractResource(AVX2, tbb);
 		}
-		else if (avx)
+		if (avx & !avx2)
 		{
-
 			ExtractResource(AVX, tbb);
 		}
-		else
+		if (!avx & !avx2)
 		{
 			ExtractResource(SSE2, tbb);
 		}
 	}
+
+
 }
 
 bool Is64BitWindows()
@@ -719,7 +704,6 @@ bool dirExists(const std::wstring& dirName_in)
 
 	return false;    // this is not a directory!
 }
-
 
 LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -803,12 +787,11 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			ExtractResource(L"D3D", gdx[1]);
 			DeleteFile(gdx[0]);
 		}
-		
 
 
 
-		HMODULE ntdllMod = GetModuleHandle(L"ntdll.dll");
-		if (!(ntdllMod && GetProcAddress(ntdllMod, "wine_get_version")))
+
+		if (!GetProcAddress(GetModuleHandle(L"ntdll.dll"), "wine_get_version"))
 		{
 
 
@@ -833,11 +816,11 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				{
 					ExtractResource(L"S10", tbb);
 				}
-				else if (precise)
+				if (precise)
 				{
 					ExtractResource(L"P10", tbb);
 				}
-				else
+				if(!strict & !precise)
 				{
 					ExtractResource(L"x13", tbb);
 				}
@@ -849,11 +832,11 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				{
 					ExtractResource(L"XPS", tbb);
 				}
-				else if (precise)
+				if (precise)
 				{
 					ExtractResource(L"XPP", tbb);
 				}
-				else
+				if (!strict & !precise)
 				{
 					ExtractResource(L"XP", tbb);
 				}
@@ -865,7 +848,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			std::wcout << L"Running on Wine" << std::endl;
 			SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
-		}	
+		}
 
 		ExtractResource(L"xa1", cgbuf[0]);
 		ExtractResource(L"xa2", cgbuf[1]);
@@ -931,7 +914,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			ExtractResource(L"xBB", adobe[1]);
 		}
 
-		if(directx)
+		if (directx)
 		{
 			PCombine(temp, cwd, L"DirectXTemp");
 			CreateDirectory(temp, nullptr);
@@ -1094,7 +1077,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 				UnblockFile(DXBUFFER[i]);
 			}
 		}
-		
+
 		if (logs)
 		{
 			PCombine(logbuffer, loldir, L"Logs");
@@ -1185,7 +1168,7 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			RmDir(buff[1]);
 		}
-	
+
 
 		if (std::wifstream(buff[2]).good())
 		{
@@ -1193,7 +1176,7 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		}
 
 
-		if(betaclient)
+		if (betaclient)
 		{
 
 			*svc = '\0';
@@ -1234,7 +1217,7 @@ LRESULT CALLBACK ButtonProc2(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			DeleteFile(gdx[1]);
 		}
 
-	
+
 
 		DeleteFile(enb[0]);
 		DeleteFile(enb[1]);
@@ -1268,7 +1251,7 @@ LRESULT CALLBACK ButtonProc3(HWND, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_LBUTTONDOWN:
 		Msg = {};
-	
+
 
 		ExtractResource(L"RES1", Reshade[0]);
 		ExtractResource(L"RES0", Reshade[1]);
@@ -1302,7 +1285,7 @@ LRESULT CALLBACK ButtonProc4(HWND, UINT msg, WPARAM wp, LPARAM lp)
 	{
 	case WM_LBUTTONDOWN:
 		Msg = {};
-		
+
 		SendMessage(hwndButton4, WM_SETTEXT, NULL, reinterpret_cast<LPARAM>(L"Installing..."));
 		CheckAndKill(L"ENBInjector.exe");
 		ExtractResource(L"ENB0", enb[0]);
@@ -1360,14 +1343,14 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		{
 			DrawText(hDC, L"Erase all LoL-Logs (FPS+)", -1, &localLabel, DT_CENTER | DT_NOCLIP);
 		}
-		
+
 		DrawText(hDC, L"Unblock DirectX for LoL (FPS+)", -1, &localLabel1, DT_CENTER | DT_NOCLIP);
 		EndPaint(hwnd, &ps);
 		break;
 
 	case WM_CREATE:
 
-		
+
 		hwndButton = CreateWindowEx(
 			NULL,
 			L"BUTTON",
@@ -1376,16 +1359,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			20,
 			20,
 			100,
-			 50,
+			50,
 			hwnd,
 			nullptr,
 			nullptr,
 			nullptr
 		);
-		
+
 		OldButtonProc = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc)));
 
-	
+
 		hwndButton2 = CreateWindowEx(
 			NULL,
 			L"BUTTON",
@@ -1400,7 +1383,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 			nullptr,
 			nullptr
 		);
-		
+
 		OldButtonProc2 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton2, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc2)));
 
 		hwndButton3 = CreateWindowEx(
@@ -1420,7 +1403,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 
 		OldButtonProc3 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton3, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc3)));
 
-	
+
 		hwndButton4 = CreateWindowEx(
 			NULL,
 			L"BUTTON",
@@ -1439,7 +1422,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp)
 		OldButtonProc4 = reinterpret_cast<WNDPROC>(SetWindowLong(hwndButton4, GWL_WNDPROC, reinterpret_cast<LONG>(ButtonProc4)));
 
 
-		
+
 
 
 		hWndComboBox = CreateWindowEx(NULL, L"COMBOBOX",
@@ -1720,8 +1703,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 		PAppend(client[4], rel.c_str());
 		if (dirExists(client[4]))
 		{
-			
-			
+
+
 			betaclient = true;
 			*svc = '\0';
 			PCombine(svc, client[4], L"installer");
@@ -1731,7 +1714,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int)
 			FindLatest(client[4]);
 			PAppend(client[4], dep.c_str());
 
-			
+
 		}
 	}
 	else
