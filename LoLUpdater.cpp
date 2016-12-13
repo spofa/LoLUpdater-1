@@ -1,4 +1,4 @@
-#define fileversion L"2.0.4.1"
+#define fileversion L"2.0.4.2"
 #include "resource.h"
 #include <Windows.h>
 #include <fstream>
@@ -626,43 +626,44 @@ void SIMDCheck(std::wstring const& AVX2, std::wstring const& AVX, std::wstring c
 		{
 			ExtractResource(SAVX2, tbb);
 		}
-		if (avx & !avx2)
+		else if (avx)
 		{
 
 			ExtractResource(SAVX, tbb);
 		}
-		if(!avx & !avx2)
+		else
 		{
 			ExtractResource(SSSE2, tbb);
 		}
 	}
-	if (precise)
+	else if (precise)
 	{
 		if (avx2)
 		{
 			ExtractResource(PAVX2, tbb);
 		}
-		if (avx & !avx2)
+		else if (avx)
 		{
 
 			ExtractResource(PAVX, tbb);
 		}
-		if (!avx & !avx2)
+		else
 		{
 			ExtractResource(PSSE2, tbb);
 		}
 	}
-	if(!strict & !precise)
+	else
 	{
 		if (avx2)
 		{
 			ExtractResource(AVX2, tbb);
 		}
-		if (avx & !avx2)
+		else if (avx)
 		{
+
 			ExtractResource(AVX, tbb);
 		}
-		if (!avx & !avx2)
+		else
 		{
 			ExtractResource(SSE2, tbb);
 		}
@@ -734,6 +735,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 		ExtractResource(L"xa1", cgbuf[0]);
 		ExtractResource(L"xa2", cgbuf[1]);
 		ExtractResource(L"xa3", cgbuf[2]);
+		msvccopy(L"X2", L"X3");
 
 		if (LoL())
 		{
@@ -784,7 +786,7 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			}
 
 
-			msvccopy(L"X2", L"X3");
+
 		}
 		else
 		{
@@ -800,50 +802,48 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 
 		if (!GetProcAddress(GetModuleHandle(L"ntdll.dll"), "wine_get_version"))
 		{
-
-
 			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINTHRESHOLD), LOBYTE(_WIN32_WINNT_WINTHRESHOLD), 0))
 			{
 				SIMDCheck(L"x6", L"x9", L"x12", L"S3", L"S6", L"S9", L"P3", L"P6", L"P9");
 			}
 
-			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8), LOBYTE(_WIN32_WINNT_WIN8), 0))
+			else if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN8), LOBYTE(_WIN32_WINNT_WIN8), 0))
 			{
 				SIMDCheck(L"x5", L"x8", L"x11", L"S8", L"S5", L"S2", L"P8", L"P5", L"P2");
 			}
 
-			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7), LOBYTE(_WIN32_WINNT_WIN7), 0))
+			else if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WIN7), LOBYTE(_WIN32_WINNT_WIN7), 0))
 			{
 				SIMDCheck(L"x4", L"x7", L"x10", L"S1", L"S4", L"S7", L"P1", L"P4", L"P7");
 			}
 
-			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA), LOBYTE(_WIN32_WINNT_VISTA), 0))
+			else if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_VISTA), LOBYTE(_WIN32_WINNT_VISTA), 0))
 			{
 				if (strict)
 				{
 					ExtractResource(L"S10", tbb);
 				}
-				if (precise)
+				else if (precise)
 				{
 					ExtractResource(L"P10", tbb);
 				}
-				if(!strict & !precise)
+				else
 				{
 					ExtractResource(L"x13", tbb);
 				}
 			}
 
-			if (IsWindowsVersionOrGreater(HIBYTE(_WIN32_WINNT_WINXP), LOBYTE(_WIN32_WINNT_WINXP), 0))
+			else
 			{
 				if (strict)
 				{
 					ExtractResource(L"XPS", tbb);
 				}
-				if (precise)
+				else if (precise)
 				{
 					ExtractResource(L"XPP", tbb);
 				}
-				if (!strict & !precise)
+				else
 				{
 					ExtractResource(L"XP", tbb);
 				}
@@ -1037,6 +1037,8 @@ LRESULT CALLBACK ButtonProc(HWND, UINT msg, WPARAM wp, LPARAM lp)
 			{
 				UnblockFile(DXBUFFER[i]);
 			}
+
+
 		}
 
 		if (logs)
